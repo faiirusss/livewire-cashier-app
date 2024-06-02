@@ -20,6 +20,7 @@ class ProductFactory extends Factory
             'nama_produk' => fake()->word(),
             'harga' => fake()->numberBetween(100, 2000),
             'stok' => fake()->numberBetween(1, 100),
+            'image' => fake()->imageUrl(),
         ];
     }
 }
