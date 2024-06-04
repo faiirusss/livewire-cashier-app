@@ -11,6 +11,9 @@ class Order extends Model
 
     protected $fillable = [
         'invoice_number',
+        'payment_method',
+        'paid_amount',
+        'done_at',  
     ];
 
     public function orderProducts()

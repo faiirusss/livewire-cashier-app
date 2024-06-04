@@ -14,6 +14,9 @@ return new class extends Migration
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
             $table->string('invoice_number')->unique();
+            $table->string('payment_method')->nullable();
+            $table->timestamp('done_at')->nullable();
+            $table->integer('paid_amount')->nullable();
             $table->timestamps();
         });
     }
