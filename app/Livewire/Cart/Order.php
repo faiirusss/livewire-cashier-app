@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Cart;
 
+use App\Models\Member;
 use App\Models\OrderProduct;
 use App\Models\Product;
 use Livewire\Component;
@@ -11,7 +12,18 @@ class Order extends Component
     public $search = '';
     public $product;
     public $order;
-    public $harga;
+    public $total_price;
+    public $total_qty;
+    public $ppn; 
+    public $grand_total;
+
+    public $discount_code = '';
+    public $discount_total;
+    public $discount_price;
+
+    // member
+    public $phone_member;
+    public $name_member;
 
     public function render()
     {
@@ -19,12 +31,89 @@ class Order extends Component
                 ->with('orderProducts')
                 ->latest()
                 ->first();
-        $this->harga = $this->order->harga ?? 0;
+        $this->total_price = $this->order->total_price ?? 0;
+        $this->total_qty = $this->order->total_qty ?? 0;
+        $this->ppn = ceil($this->total_price * 0.05);
+
+        $this->discount_price = $this->discount();
+
+
+        if($this->discount_code != '')
+        {
+            $this->grand_total = $this->total_price + $this->ppn - $this->discount_price;
+        } else {
+            $this->grand_total = $this->total_price + $this->ppn;
+        }        
+
         return view('livewire.cart.order', [
             'products' => Product::paginate(10),
-            'order' => $this->order
+            'order' => $this->order,
+        ]);
+    }
+
+    public function discount()
+    {
+        $discount_code = $this->discount_code;
+
+        if($discount_code === 'FAIRUS123') 
+        {
+            $this->discount_total = '10%';
+            $this->discount_price = $this->order->total_price * 0.1;
+        }
+        return $this->discount_price;
+    }
+
+    public function member()
+    {
+        $member = Member::where('phone', $this->phone_member)->first();
+
+        if ($member == null) {
+            $member = Member::firstOrCreate([
+                'phone' => $this->phone_member,
+            ]);
+
+            $order = \App\Models\Order::where('done_at', null)
+                    ->latest()
+                    ->first();
+
+            if ($order) {
+                $order->update([
+                    'member_id' => $member->id
+                ]);
+            }
+
+            session()->flash('message', 'Member baru berhasil dibuat');
+            $this->reset();
+        } else {
+            $this->name_member = $member->name; 
+            return $this->name_member;
+        }
+
+    }
+
+    public function confirmOrder()
+    {
+        $discount_total = $this->discount_total ?? 0;
+        $discount_price = $this->discount_price ?? 0;
+        $grand_total = $this->grand_total;
+        
+        $order = \App\Models\Order::where('done_at', null)->latest()
+        ->first();  
+
+        if($order->member_id == null){
+            session()->flash('error', 'member harus diisi!');
+            return;
+        }
+        
+        $order->update([
+            'discount_type' => $discount_total,
+            'discount_price' => $discount_price,
+            'grand_total' => $grand_total,
         ]);
 
+      
+
+        $this->redirect('/payment');                
     }
 
     public function createOrder($isAdded = true)
@@ -64,7 +153,7 @@ class Order extends Component
                 OrderProduct::create([
                     'order_id' => $this->order->id,
                     'product_id' => $product->id,
-                    'price' => $product->harga,
+                    'unit_price' => $product->selling_price,
                     'quantity' => 1
                 ]);
             }
@@ -72,8 +161,6 @@ class Order extends Component
 
         $this->reset('search');
     }
-
-    
 
     public function updateCart($isAdded = true, $id)
     {   
@@ -108,12 +195,12 @@ class Order extends Component
                         OrderProduct::create([
                             'order_id' => $this->order->id,
                             'product_id' => $product->id,
-                            'price' => $product->harga,
+                            'unit_price' => $product->selling_price,
                             'quantity' => 1
                         ]);
                     }
                 }
-                $this->harga = $this->order->harga ?? 0;
+                $this->total_price = $this->order->total_price ?? 0;
             } 
         } catch(ValidationException $e) {
             dd($e);
@@ -122,6 +209,17 @@ class Order extends Component
         }
     }
 
+    function removeCart($id){
+        $orderProduct = OrderProduct::where('order_id', $this->order->id)
+                    ->where('product_id', $id)
+                    ->first();
+        $product = OrderProduct::all();
+        if($product->count() > 1){
+            $orderProduct->delete();
+        } else {
+            return false;
+        }
+    }    
     function generateUniqueCode($length = 6) {
         $number = uniqid();
         $varray = str_split($number);
