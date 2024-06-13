@@ -22,7 +22,7 @@
         {{-- container --}}
         <div class="flex flex-row w-full">
 
-            @livewire('layout.sidebar')
+            @livewire('sidebar')
 
             {{-- middle content --}}
             {{ $slot }}

@@ -64,8 +64,7 @@
                         </li>
                     </ul>
                     {{-- end form payment method --}}
-                    <a href="/order" wire:navigate>back</a>
-                </div>
+            </div>
             </div>
         </div>
     </div>

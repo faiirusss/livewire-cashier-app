@@ -168,7 +168,7 @@
                     <input type="text" id="simple-search" wire:model="search" class=" bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500
                         focus:border-blue-500 block w-full ps-10 p-2.5 dark:bg-gray-700 dark:border-gray-600
                         dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                        placeholder="Masukkan kode produk..." required />
+                        placeholder="Masukkan kode produk..." required autofocus />
                 </div>
                 <button type="submit"
                     class="p-2.5 ms-2 text-sm font-medium text-white bg-blue-700 rounded-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
@@ -182,7 +182,7 @@
             </form>
         </div>
 
-        <div>
+        <div class="">
             <div class="flex items-center px-8 py-4">
                 <svg class="inline w-[24px] h-[24px] text-gray-800 dark:text-white" aria-hidden="true"
                     xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
@@ -192,13 +192,13 @@
                 <span class="text-lg font-bold">Keranjang</span>
             </div>
 
-            <div class="p-6 mx-8 border rounded-md">
+            <div class="p-6 mx-8 mb-5 overflow-y-auto border rounded-md max-h-[590px]">
 
                 @if($order)
                 {{-- @foreach($order->orderProducts as $item) --}}
 
                 {{-- items --}}
-                <div class="pb-5 space-y-4">
+                <div class="pb-5">
                     @foreach($order->orderProducts as $item)
                     <div class="flex items-center justify-between p-4 border-b border-gray-200">
                         <div class="flex-shrink-0 w-24">
@@ -207,7 +207,7 @@
                         </div>
                         <div class="flex flex-col w-1/5 ms-5">
                             <span class="block font-bold text-md">{{ $item->product->product_name}}</span>
-                            <span class="text-gray-500">{{ $item->product->color }}</span>
+                            <span class="text-gray-500 truncate">{{ $item->product->color }}</span>
                         </div>
                         <div class="w-1/5 text-center">
                             <span>{{ $item->product->harga_formatted }}</span>
@@ -307,13 +307,8 @@
                 </form>
             </div>
             <p id="helper-text-explanation" class="mt-2 text-sm text-gray-500 dark:text-gray-400">
-                @if ($name_member)
-            <div class="text-sm text-green-800">
-                <span>Nama Member: {{ $name_member }}</span>
-            </div>
-            @endif
 
-            @if (session()->has('message'))
+                @if (session()->has('message'))
             <div class="text-sm text-green-800">
                 <span class="font-medium">{{ session('message') }}</span>
             </div>

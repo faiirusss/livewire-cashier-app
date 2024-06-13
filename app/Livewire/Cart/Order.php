@@ -6,6 +6,7 @@ use App\Models\Member;
 use App\Models\OrderProduct;
 use App\Models\Product;
 use Livewire\Component;
+use Livewire\WithPagination;
 
 class Order extends Component
 {
@@ -25,6 +26,8 @@ class Order extends Component
     public $phone_member;
     public $name_member;
 
+    use WithPagination;
+
     public function render()
     {
         $this->order = \App\Models\Order::where('done_at', null) 
@@ -43,7 +46,8 @@ class Order extends Component
             $this->grand_total = $this->total_price + $this->ppn - $this->discount_price;
         } else {
             $this->grand_total = $this->total_price + $this->ppn;
-        }        
+        }       
+        
 
         return view('livewire.cart.order', [
             'products' => Product::paginate(10),
@@ -83,10 +87,18 @@ class Order extends Component
             }
 
             session()->flash('message', 'Member baru berhasil dibuat');
-            $this->reset();
         } else {
+            $order = \App\Models\Order::where('done_at', null)
+                    ->latest()
+                    ->first();
+
+            if ($order) {
+                $order->update([
+                    'member_id' => $member->id
+                ]);
+            }
             $this->name_member = $member->name; 
-            return $this->name_member;
+            session()->flash('message', 'Nama Member: ' . $this->name_member);
         }
 
     }
@@ -129,7 +141,9 @@ class Order extends Component
             ]);
         }
 
-        $product = Product::findOrFail($this->search);
+        $product = Product::where('id', $this->search)
+        ->orWhere('product_name', 'like', '%' . $this->search . '%')
+        ->first();
         $orderProduct = OrderProduct::where('order_id', $this->order->id)
                     ->where('product_id', $this->search)
                     ->first();
