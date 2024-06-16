@@ -17,6 +17,7 @@ class Order extends Model
         'discount_price',
         'grand_total',
         'paid_amount',
+        'return_amount',
         'done_at',  
     ];
 

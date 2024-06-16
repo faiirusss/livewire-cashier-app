@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('payment_method')->nullable();
             $table->timestamp('done_at')->nullable();
             $table->integer('paid_amount')->nullable();
+            $table->integer('return_amount')->nullable();
             $table->timestamps();
         });
     }

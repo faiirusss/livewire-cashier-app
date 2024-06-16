@@ -64,7 +64,7 @@
                         </li>
                     </ul>
                     {{-- end form payment method --}}
-            </div>
+                </div>
             </div>
         </div>
     </div>
@@ -76,9 +76,32 @@
     </div>
     {{-- end right content --}}
 
+    <style>
+        .modal {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            z-index: 50;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+
     {{-- modal --}}
     <div id="select-modal" tabindex="-1" aria-hidden="true"
-        class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+        class="{{ $isModalOpen ? 'modal' : 'hidden' }} overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
         <div class="relative w-full max-w-md max-h-full p-4">
             <!-- Modal content -->
             <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
@@ -112,17 +135,19 @@
                     </div>
                     <div class="flex justify-between">
                         <span class="text-sm font-normal text-gray-600">PPN 5%</span>
-                        <span class="text-sm font-normal text-gray-800">Rp{{ number_format(ceil($total_price * 0.05), 0,
+                        <span class="text-sm font-normal text-gray-800">Rp{{ number_format($ppn, 0,
                             ',',
                             '.') }}</span>
                     </div>
                     <div class="flex justify-between">
                         <span class="text-sm font-normal text-gray-600">Total Pembayaran</span>
-                        <span class="text-sm font-normal text-gray-800">{{ $paid_amount }}</span>
+                        <span class="text-sm font-normal text-gray-800">Rp{{ number_format($paid_amount, 0, ',', '.')
+                            }}</span>
                     </div>
                     <div class="flex justify-between pb-3 mb-3 border-b border-dashed">
                         <span class="text-sm font-normal text-gray-600">Kembali</span>
-                        <span class="text-sm font-normal text-gray-800">Cash</span>
+                        <span class="text-sm font-normal text-gray-800">Rp{{ number_format($return_amount, 0, ',', '.')
+                            }}</span>
                     </div>
                     <div class="flex justify-between pb-3 mb-3 border-b border-dashed">
                         <span class="text-lg font-bold text-gray-600">Total Belanja</span>
@@ -130,7 +155,7 @@
                             '.') }}</span>
                     </div>
                     <div class="p-4 my-5 border-b">
-                        <form class="max-w-full" wire:submit="payment">
+                        <form class="max-w-full" wire:submit.prevent="payment">
                             <div class="relative">
                                 <div
                                     class="absolute inset-y-0 start-0 top-0 flex items-center ps-3.5 pointer-events-none">
@@ -147,11 +172,12 @@
                             </div>
                         </form>
                     </div>
-
-                    <button
-                        class="text-white inline-flex w-full justify-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                        Next step
-                    </button>
+                    <form wire:submit.prevent="done">
+                        <button type="submit"
+                            class="text-white inline-flex w-full justify-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                            Next step
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>
