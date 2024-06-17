@@ -47,11 +47,18 @@ class Order extends Component
         } else {
             $this->grand_total = $this->total_price + $this->ppn;
         }       
-        
+
+        $member = Member::all();
+
+        $results = [];
+        if(strlen($this->phone_member) > 0) {
+            $results = Member::where('phone', 'like', '%'.$this->phone_member.'%')->get();
+        }
 
         return view('livewire.cart.order', [
             'products' => Product::paginate(10),
             'order' => $this->order,
+            'results' => $results,
         ]);
     }
 

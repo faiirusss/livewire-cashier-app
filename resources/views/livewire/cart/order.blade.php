@@ -301,9 +301,25 @@
                     <div class="absolute inset-y-0 flex items-center px-2 pointer-events-none start-0 border-e">
                         <span class="text-sm text-gray-500">+62</span>
                     </div>
-                    <input type="text" wire:model="phone_member"
+                    <input type="text" wire:model.live.debounce.550ms="phone_member" list="HeadlineActArtist"
+                        id="HeadlineAct"
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                        placeholder="Masukkan nomor telepon" required>
+                        placeholder="Masukkan nomor telepon" required autocomplete="off">
+                    <div class="absolute w-full mt-2 overflow-hidden rounded-md bg-gray-50">
+                        {{-- @foreach($results as $item)
+                        <div class="px-3 py-2 cursor-pointer hover:bg-slate-100">
+                            <p class="text-sm font-medium text-gray-600" value>{{ $item->phone }}</p>
+                        </div>
+                        @endforeach --}}
+                        @if($results)
+                        <datalist name="HeadlineAct" id="HeadlineActArtist">
+                            @foreach($results as $item)
+                            <option value="{{ $item->phone }}">{{ $item->name }}</option>
+                            @endforeach
+                        </datalist>
+                        @endif
+                    </div>
+
                 </form>
             </div>
             <p id="helper-text-explanation" class="mt-2 text-sm text-gray-500 dark:text-gray-400">

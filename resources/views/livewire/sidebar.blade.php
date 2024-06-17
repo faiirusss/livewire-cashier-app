@@ -105,15 +105,19 @@ new class extends Component
                             ID Pesanan
                             <span class="font-bold text-black uppercase text-md">#{{ $order->invoice_number}}</span>
                         </h3>
-                        <span class="text-sm text-gray-400">Rp{{ number_format($order->grand_total, 0, ',',
-                            '.')
-                            }}</span>
                         <div class=" sm:flex sm:items-center sm:gap-2">
                             <div class="flex items-center gap-1 text-gray-500">
                                 <p class="text-md">{{ $order->member->name ?? $order->member->phone }}</p>
                             </div>
                             <span class="hidden sm:block" aria-hidden="true">&middot;</span>
+                            <div class="flex items-center gap-1 text-gray-500">
+                                <p class="text-md">{{ $order->payment_method }}</p>
+                            </div>
                         </div>
+                        <span class="text-sm text-gray-400">Rp{{ number_format($order->grand_total, 0, ',',
+                            '.')
+                            }}</span>
+
                         <span
                             class="bg-green-100 text-green-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300">
                             {{ \Carbon\Carbon::parse($order->done_at)->diffForHumans() }}
