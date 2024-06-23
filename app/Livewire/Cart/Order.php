@@ -70,6 +70,12 @@ class Order extends Component
         {
             $this->discount_total = '10%';
             $this->discount_price = $this->order->total_price * 0.1;
+        } else {
+            $this->discount_price = 0;
+            $this->discount_total = 0;
+            $this->grand_total = $this->total_price + $this->ppn;
+
+            session()->flash('error_promo', 'Kode Diskon Tidak Valid');
         }
         return $this->discount_price;
     }
@@ -234,11 +240,13 @@ class Order extends Component
         $orderProduct = OrderProduct::where('order_id', $this->order->id)
                     ->where('product_id', $id)
                     ->first();
-        $product = OrderProduct::all();
+        $product = $orderProduct;
         if($product->count() > 1){
             $orderProduct->delete();
-        } else {
-            return false;
+        } else if ($product->count() == 1) {
+            $orderProduct->delete();
+            $this->order->delete();
+            $this->redirect('/order');
         }
     }    
     function generateUniqueCode($length = 6) {

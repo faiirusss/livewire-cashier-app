@@ -1,20 +1,3 @@
-<?php
-
-use App\Livewire\Actions\Logout;
-use Livewire\Volt\Component;
-
-new class extends Component
-{
-    /**
-     * Log the current user out of the application.
-     */    
-    public function logout(Logout $logout): void
-    {
-        $logout();
-
-        $this->redirect('/', navigate: true);
-    }
-}; ?>
 <div>
     <div class="flex flex-col justify-between w-auto h-screen bg-white border-e">
         <div>
@@ -22,7 +5,7 @@ new class extends Component
                 <button class="type=" button" data-drawer-target="drawer-navigation"
                     data-drawer-show="drawer-navigation" aria-controls="drawer-navigation"">
         <span
-          class="grid text-xs text-gray-500 rounded-lg  hover:bg-gray-50 hover:text-gray-700 size-10 place-content-center">
+          class="grid text-xs text-gray-500 rounded-lg hover:bg-gray-50 hover:text-gray-700 size-10 place-content-center">
                     <svg class="opacity-75 size-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24"
                         height="24" fill="none" viewBox="0 0 24 24">
                         <path stroke="currentColor" stroke-linecap="round" stroke-width="2"
@@ -141,5 +124,4 @@ new class extends Component
         </div>
     </div>
     {{-- end sidebar --}}
-
 </div>

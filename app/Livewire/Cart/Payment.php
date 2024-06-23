@@ -89,7 +89,7 @@ class Payment extends Component
         ]);
         return redirect()->route('order');
     }
-
+    
     public function pay_qris()
     {
         $this->order = Order::where('done_at', null)

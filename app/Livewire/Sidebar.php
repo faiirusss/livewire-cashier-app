@@ -2,6 +2,8 @@
 
 namespace App\Livewire;
 
+use App\Livewire\Actions\Logout;
+
 use App\Models\Order;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -20,5 +22,12 @@ class Sidebar extends Component
         return view('livewire.sidebar', [
             'orders' => $orders
         ]);
+    }
+
+    public function logout(Logout $logout): void
+    {
+        $logout();
+
+        $this->redirect('/', navigate: true);
     }
 }
