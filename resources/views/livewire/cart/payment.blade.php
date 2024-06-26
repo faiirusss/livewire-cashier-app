@@ -130,32 +130,26 @@
                         <span class="text-sm font-normal text-gray-600">Metode Pembayaran</span>
                         <span class="text-sm font-normal text-gray-800">Cash</span>
                     </div>
+                    
+                    @if($order->paid_amount == null)
                     <div class="flex justify-between">
-                        <span class="text-sm font-normal text-gray-600">Total Harga ({{ $total_qty }})</span>
+                        <span class="text-sm font-normal text-gray-600">Total Harga ({{ $total_qty }} Barang)</span>
                         <span class="text-sm font-normal text-gray-800">Rp{{ number_format($total_price, 0, ',', '.')
                             }}</span>
-                    </div>
+                    </div>                    
+                    @if($order->discount_price !== 0) 
                     <div class="flex justify-between">
                         <span class="text-sm font-normal text-gray-600">Total Diskon Barang</span>
                         <span class="text-sm font-normal text-gray-800">-Rp{{ number_format($order->discount_price, 0,
                             ',',
                             '.') }}</span>
                     </div>
-                    <div class="flex justify-between">
+                    @endif
+                    <div class="flex justify-between pb-3 mb-3 border-b border-dashed">
                         <span class="text-sm font-normal text-gray-600">PPN 5%</span>
                         <span class="text-sm font-normal text-gray-800">Rp{{ number_format($ppn, 0,
                             ',',
                             '.') }}</span>
-                    </div>
-                    <div class="flex justify-between">
-                        <span class="text-sm font-normal text-gray-600">Total Pembayaran</span>
-                        <span class="text-sm font-normal text-gray-800">Rp{{ number_format($paid_amount, 0, ',', '.')
-                            }}</span>
-                    </div>
-                    <div class="flex justify-between pb-3 mb-3 border-b border-dashed">
-                        <span class="text-sm font-normal text-gray-600">Kembali</span>
-                        <span class="text-sm font-normal text-gray-800">Rp{{ number_format($return_amount, 0, ',', '.')
-                            }}</span>
                     </div>
                     <div class="flex justify-between pb-3 mb-3 border-b border-dashed">
                         <span class="text-lg font-bold text-gray-600">Total Belanja</span>
@@ -176,9 +170,36 @@
                                 </div>
                                 <input type="number" wire:model="paid_amount" aria-describedby="helper-text-explanation"
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                    placeholder="Masukkan Total Pembayaran" required />
+                                    placeholder="Masukkan Uang Pembayaran" required />
                             </div>
+                            @if(session()->has('error_payment'))
+                            <div id="alert-2" class="flex items-center p-4 my-4 text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400" role="alert">
+                                <svg class="flex-shrink-0 w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                                  <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
+                                </svg>
+                                <span class="sr-only">Info</span>
+                                <div class="text-sm font-medium ms-3">
+                                 {{ session('error_payment') }}
+                                </div>                                
+                              </div>
+                            @endif
                         </form>
+                    </div>   
+                    @else
+                    <div class="flex justify-between pb-3 mb-3 border-b border-dashed">
+                        <span class="text-lg font-bold text-gray-600">Total Belanja</span>
+                        <span class="text-lg font-bold text-gray-800">Rp{{ number_format($order->grand_total, 0, ',',
+                            '.') }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-sm font-normal text-gray-600">Total Uang Dibayarkan</span>
+                        <span class="text-sm font-normal text-gray-800">Rp{{ number_format($paid_amount, 0, ',', '.')
+                            }}</span>
+                    </div>
+                    <div class="flex justify-between pb-5 mb-5 border-b">
+                        <span class="text-sm font-normal text-gray-600">Kembali</span>
+                        <span class="text-sm font-normal text-gray-800">Rp{{ number_format($return_amount, 0, ',', '.')
+                            }}</span>
                     </div>
                     <form wire:submit.prevent="done">
                         <button type="submit"
@@ -186,6 +207,8 @@
                             Cetak Struk
                         </button>
                     </form>
+                    @endif                    
+                                     
                 </div>
             </div>
         </div>
@@ -228,12 +251,14 @@
                         <span class="text-sm font-normal text-gray-800">Rp{{ number_format($total_price, 0, ',', '.')
                             }}</span>
                     </div>
+                    @if($order->discount_price !== 0) 
                     <div class="flex justify-between">
                         <span class="text-sm font-normal text-gray-600">Total Diskon Barang</span>
                         <span class="text-sm font-normal text-gray-800">-Rp{{ number_format($order->discount_price, 0,
                             ',',
                             '.') }}</span>
                     </div>
+                    @endif
                     <div class="flex justify-between">
                         <span class="text-sm font-normal text-gray-600">PPN 5%</span>
                         <span class="text-sm font-normal text-gray-800">Rp{{ number_format(ceil($total_price * 0.05), 0,

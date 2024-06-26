@@ -15,9 +15,10 @@ use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'welcome');
 
-Route::get('/order', App\Livewire\Cart\Order::class)->name('order');
-Route::get('/payment', App\Livewire\Cart\Payment::class)->name('payment');
-Route::get('/checkout')->name('checkout');
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/order', App\Livewire\Cart\Order::class)->name('order');
+    Route::get('/payment', App\Livewire\Cart\Payment::class)->name('payment');      
+});
 
 Route::view('dashboard', 'dashboard')
     ->middleware(['auth', 'verified'])

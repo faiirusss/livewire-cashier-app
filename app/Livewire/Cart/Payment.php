@@ -53,8 +53,9 @@ class Payment extends Component
     public function payment()
     {
         $this->validate([
-            'paid_amount' => 'required|numeric|min:' . $this->order->grand_total, // Validasi agar paid_amount >= grand_total
+            'paid_amount' => 'required|numeric',
         ]);
+
 
         // Perhitungan total_qty dan total_price
         $this->total_qty = 0;
@@ -68,13 +69,21 @@ class Payment extends Component
         $this->return_amount = $this->paid_amount - $this->order->grand_total;
 
         // Update order dengan informasi pembayaran
-        $this->order->update([
-            'paid_amount' => $this->paid_amount,
-            'return_amount' => $this->return_amount,
-            'payment_method' => 'Cash',
-        ]);
+        if($this->paid_amount > $this->order->grand_total) {
+            
+            $this->order->update([
+                'paid_amount' => $this->paid_amount,
+                'return_amount' => $this->return_amount,
+                'payment_method' => 'Cash',
+            ]);
+            $this->isModalOpen = true; // Modal tetap terbuka setelah pembayaran
+            
+        } else {
+            $this->isModalOpen = true; // Modal tetap terbuka setelah pembayaran
+            $this->reset('paid_amount');
+            session()->flash('error_payment', 'Uang yang dibayar kurang!');
+        }
         
-        $this->isModalOpen = true; // Modal tetap terbuka setelah pembayaran
     }
 
     public function done()
