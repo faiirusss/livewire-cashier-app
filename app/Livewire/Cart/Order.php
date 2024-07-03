@@ -142,7 +142,7 @@ class Order extends Component
     }
 
     public function createOrder($isAdded = true)
-    {
+    { 
         $this->order = \App\Models\Order::where('done_at', null)
                     ->latest()
                     ->first();        
@@ -154,37 +154,50 @@ class Order extends Component
             ]);
         }
 
+        // mencari product dengan id 
         $product = Product::where('id', $this->search)
         ->orWhere('product_name', 'like', '%' . $this->search . '%')
         ->first();
-        $orderProduct = OrderProduct::where('order_id', $this->order->id)
-                    ->where('product_id', $this->search)
-                    ->first();
-        if($orderProduct)
+    
+        if($product->stock >= 1)
         {
-            if($isAdded)
+            // mencari product di order product 
+            $orderProduct = OrderProduct::where('order_id', $this->order->id)
+                ->where('product_id', $this->search)
+                ->first();
+            if($orderProduct)
             {
-                $orderProduct->increment('quantity', 1);
-            }
-            else
-            {
-                $orderProduct->decrement('quantity', 1);
-                if ($orderProduct->quantity < 1) {
-                    $orderProduct->delete();
+                if($isAdded)
+                {
+                    $orderProduct->increment('quantity', 1);
+                }
+                else
+                {
+                    $orderProduct->decrement('quantity', 1);
+                    if ($orderProduct->quantity < 1) {
+                        $orderProduct->delete();
+                    }
+                }
+                $orderProduct->save();
+            } else {
+                if($isAdded)
+                {
+                    OrderProduct::create([
+                        'order_id' => $this->order->id,
+                        'product_id' => $product->id,
+                        'unit_price' => $product->selling_price,
+                        'quantity' => 1
+                    ]);
                 }
             }
-            $orderProduct->save();
-        } else {
-            if($isAdded)
-            {
-                OrderProduct::create([
-                    'order_id' => $this->order->id,
-                    'product_id' => $product->id,
-                    'unit_price' => $product->selling_price,
-                    'quantity' => 1
-                ]);
-            }
         }
+
+        else {
+            session()->flash('product_error', 'Stok Tidak Cukup');
+            // dd('stok abis');
+        }
+
+        
 
         $this->reset('search');
     }

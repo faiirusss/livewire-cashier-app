@@ -165,15 +165,16 @@
                                 d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
                         </svg>
                     </div>
-                    <input type="text" id="simple-search" wire:model="search" class=" bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500
+                    <input type="text" id="simple-search" wire:model="search"
+                        class=" bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500
                         focus:border-blue-500 block w-full ps-10 p-2.5 dark:bg-gray-700 dark:border-gray-600
                         dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                         placeholder="Masukkan kode produk..." required autofocus autocomplete="offn" />
                 </div>
                 <button type="submit"
                     class="p-2.5 ms-2 text-sm font-medium text-white bg-blue-700 rounded-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                    <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                        fill="none" viewBox="0 0 24 24">
+                    <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24"
+                        height="24" fill="none" viewBox="0 0 24 24">
                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M5 12h14m-7 7V5" />
                     </svg>
@@ -191,152 +192,171 @@
                 </svg>
                 <span class="text-lg font-bold">Keranjang</span>
             </div>
+            @if (session()->has('product_error'))
+                <div class="flex items-center p-4 mx-8 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400"
+                    role="alert">
+                    <svg class="flex-shrink-0 inline w-4 h-4 me-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                        fill="currentColor" viewBox="0 0 20 20">
+                        <path
+                            d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
+                    </svg>
+                    <span class="sr-only">Info</span>
+                    <div>
+                        {{ session('product_error') }}
+                    </div>
+                </div>
+            @endif
 
             <div class="p-6 mx-8 mb-5 overflow-y-auto border rounded-md max-h-[590px]">
 
-                @if($order)
-                {{-- @foreach($order->orderProducts as $item) --}}
+                @if ($order)
+                    {{-- @foreach ($order->orderProducts as $item) --}}
 
-                {{-- items --}}
-                <div class="pb-5">
-                    @foreach($order->orderProducts as $item)
-                    <div class="flex items-center justify-between p-4 border-b border-gray-200">
-                        <div class="flex-shrink-0 w-24">
-                            <img src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/content/content-gallery-3.png"
-                                class="w-full rounded" alt="{{ $item->product->nama_produk }}">
-                        </div>
-                        <div class="flex flex-col w-1/5 ms-5">
-                            <span class="block font-bold text-md">{{ $item->product->product_name}}</span>
-                            <span class="text-gray-500 truncate">{{ $item->product->color }}</span>
-                        </div>
-                        <div class="w-1/5 text-center">
-                            <span>{{ $item->product->harga_formatted }}</span>
-                        </div>
-                        <div class="flex items-center justify-center w-1/5 mx-5">
-                            <div class="flex items-center border border-gray-200 rounded">
-                                <button type="button" wire:click="updateCart(false, '{{ $item->product->id }}')"
-                                    class="px-2 leading-10 text-gray-600 transition size-10 hover:opacity-75">
-                                    &minus;
-                                </button>
-                                <input type="number" id="Quantity" value="{{ $item->quantity }}"
-                                    class="h-10 w-16 border-transparent text-center [-moz-appearance:_textfield] sm:text-sm [&::-webkit-inner-spin-button]:m-0 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:m-0 [&::-webkit-outer-spin-button]:appearance-none" />
-                                <button type="button" wire:click="updateCart(true, '{{ $item->product->id }}')"
-                                    class="px-2 leading-10 text-gray-600 transition size-10 hover:opacity-75">
-                                    &plus;
-                                </button>
+                    {{-- items --}}
+                    <div class="pb-5">
+                        @foreach ($order->orderProducts as $item)
+                            <div class="flex items-center justify-between p-4 border-b border-gray-200">
+                                <div class="flex-shrink-0 w-24">
+                                    <img src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/content/content-gallery-3.png"
+                                        class="w-full rounded" alt="{{ $item->product->nama_produk }}">
+                                </div>
+                                <div class="flex flex-col w-1/5 ms-5">
+                                    <span class="block font-bold text-md">{{ $item->product->product_name }}</span>
+                                    <span class="text-gray-500 truncate">{{ $item->product->color }}</span>
+                                </div>
+                                <div class="w-1/5 text-center">
+                                    <span>{{ $item->product->harga_formatted }}</span>
+                                </div>
+                                <div class="flex items-center justify-center w-1/5 mx-5">
+                                    <div class="flex items-center border border-gray-200 rounded">
+                                        <button type="button"
+                                            wire:click="updateCart(false, '{{ $item->product->id }}')"
+                                            class="px-2 leading-10 text-gray-600 transition size-10 hover:opacity-75">
+                                            &minus;
+                                        </button>
+                                        <input type="number" id="Quantity" value="{{ $item->quantity }}"
+                                            class="h-10 w-16 border-transparent text-center [-moz-appearance:_textfield] sm:text-sm [&::-webkit-inner-spin-button]:m-0 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:m-0 [&::-webkit-outer-spin-button]:appearance-none" />
+                                        <button type="button" wire:click="updateCart(true, '{{ $item->product->id }}')"
+                                            class="px-2 leading-10 text-gray-600 transition size-10 hover:opacity-75">
+                                            &plus;
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="w-1/5 text-center">
+                                    <span>Rp{{ number_format($item->quantity * $item->unit_price, 0, ',', '.') }}</span>
+                                </div>
+                                <div class="flex-shrink-0 ms-10">
+                                    <button type="button" wire:click="removeCart('{{ $item->product->id }}')">
+                                        <svg class="w-6 h-6 text-red-500 dark:text-white" aria-hidden="true"
+                                            xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                            fill="none" viewBox="0 0 24 24">
+                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                                stroke-width="2"
+                                                d="M5 7h14m-9 3v8m4-8v8M10 3h4a1 1 0 0 1 1 1v3H9V4a1 1 0 0 1 1-1ZM6 7h12v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7Z" />
+                                        </svg>
+                                    </button>
+                                </div>
                             </div>
-                        </div>
-                        <div class="w-1/5 text-center">
-                            <span>Rp{{ number_format($item->quantity * $item->unit_price, 0, ',', '.') }}</span>
-                        </div>
-                        <div class="flex-shrink-0 ms-10">
-                            <button type="button" wire:click="removeCart('{{ $item->product->id }}')">
-                                <svg class="w-6 h-6 text-red-500 dark:text-white" aria-hidden="true"
-                                    xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
-                                    viewBox="0 0 24 24">
-                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="M5 7h14m-9 3v8m4-8v8M10 3h4a1 1 0 0 1 1 1v3H9V4a1 1 0 0 1 1-1ZM6 7h12v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7Z" />
-                                </svg>
-                            </button>
-                        </div>
+                        @endforeach
                     </div>
-                    @endforeach
-                </div>
 
 
 
-                {{-- end items --}}
-                {{-- @endforeach --}}
+                    {{-- end items --}}
+                    {{-- @endforeach --}}
                 @else
-                <div>
-                    <div class="text-center">
-                        <svg class="w-auto h-56 mx-auto text-gray-300 sm:h-64" aria-hidden="true"
-                            xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"
-                                d="M9 10V6a3 3 0 0 1 3-3v0a3 3 0 0 1 3 3v4m3-2 .917 11.923A1 1 0 0 1 17.92 21H6.08a1 1 0 0 1-.997-1.077L6 8h12Z" />
-                        </svg>
+                    <div>
+                        <div class="text-center">
+                            <svg class="w-auto h-56 mx-auto text-gray-300 sm:h-64" aria-hidden="true"
+                                xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
+                                viewBox="0 0 24 24">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                    stroke-width="1"
+                                    d="M9 10V6a3 3 0 0 1 3-3v0a3 3 0 0 1 3 3v4m3-2 .917 11.923A1 1 0 0 1 17.92 21H6.08a1 1 0 0 1-.997-1.077L6 8h12Z" />
+                            </svg>
 
-                        <p class="mt-4 text-gray-500">Keranjang masih kosong!</p>
+                            <p class="mt-4 text-gray-500">Keranjang masih kosong!</p>
+                        </div>
                     </div>
-                </div>
                 @endif
 
             </div>
         </div>
+
+
     </div>
     {{-- end middle content --}}
 
     {{-- right content --}}
     <div class="flex flex-col w-4/12 max-h-screen bg-white">
-        @if($order)
+        @if ($order)
 
-        <div class="px-2 py-7 max-w-screen sm:px-6 lg:px-8">
-            <h3 class="pb-5 text-xl font-bold border-b">Ringkasan Belanja</h3>
-        </div>
-
-        <div class="px-8 pb-8 border-b border-gray-100">
-            <div class="flow-root py-3 border border-gray-100 rounded-lg shadow-sm">
-                <dl class="-my-3 text-sm divide-y divide-gray-200 divide-dashed">
-                    <div class="flex justify-between p-3">
-                        <dt class="font-medium text-gray-900">ID Pesanan</dt>
-                        <dd class="text-gray-700 uppercase sm:col-span-2">{{ $order->invoice_number }}</dd>
-                    </div>
-                    <div class="flex justify-between p-3">
-                        <dt class="font-medium text-gray-900">Tanggal</dt>
-                        <dd class="text-gray-700 sm:col-span-2">{{
-                            \Carbon\Carbon::parse($order->created_at)->translatedFormat('d F Y H:i') }}</dd>
-                    </div>
-                </dl>
+            <div class="px-2 py-7 max-w-screen sm:px-6 lg:px-8">
+                <h3 class="pb-5 text-xl font-bold border-b">Ringkasan Belanja</h3>
             </div>
-        </div>
 
-        <div class="px-8 pb-5 mt-5 border-b border-gray-100">
+            <div class="px-8 pb-8 border-b border-gray-100">
+                <div class="flow-root py-3 border border-gray-100 rounded-lg shadow-sm">
+                    <dl class="-my-3 text-sm divide-y divide-gray-200 divide-dashed">
+                        <div class="flex justify-between p-3">
+                            <dt class="font-medium text-gray-900">ID Pesanan</dt>
+                            <dd class="text-gray-700 uppercase sm:col-span-2">{{ $order->invoice_number }}</dd>
+                        </div>
+                        <div class="flex justify-between p-3">
+                            <dt class="font-medium text-gray-900">Tanggal</dt>
+                            <dd class="text-gray-700 sm:col-span-2">
+                                {{ \Carbon\Carbon::parse($order->created_at)->translatedFormat('d F Y H:i') }}</dd>
+                        </div>
+                    </dl>
+                </div>
+            </div>
 
-            <label for="helper-text" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                Member
-            </label>
-            <div class="relative mb-2">
-                <form wire:submit="member">
-                    <div class="absolute inset-y-0 flex items-center px-2 pointer-events-none start-0 border-e">
-                        <span class="text-sm text-gray-500">+62</span>
-                    </div>
-                    <input type="text" wire:model.live.debounce.550ms="phone_member" list="HeadlineActArtist"
-                        id="HeadlineAct"
-                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                        placeholder="Masukkan nomor telepon" required autocomplete="off">
-                    <div class="absolute w-full mt-2 overflow-hidden rounded-md bg-gray-50">
-                        {{-- @foreach($results as $item)
+            <div class="px-8 pb-5 mt-5 border-b border-gray-100">
+
+                <label for="helper-text" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                    Member
+                </label>
+                <div class="relative mb-2">
+                    <form wire:submit="member">
+                        <div class="absolute inset-y-0 flex items-center px-2 pointer-events-none start-0 border-e">
+                            <span class="text-sm text-gray-500">+62</span>
+                        </div>
+                        <input type="text" wire:model.live.debounce.550ms="phone_member" list="HeadlineActArtist"
+                            id="HeadlineAct"
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            placeholder="Masukkan nomor telepon" required autocomplete="off">
+                        <div class="absolute w-full mt-2 overflow-hidden rounded-md bg-gray-50">
+                            {{-- @foreach ($results as $item)
                         <div class="px-3 py-2 cursor-pointer hover:bg-slate-100">
                             <p class="text-sm font-medium text-gray-600" value>{{ $item->phone }}</p>
                         </div>
                         @endforeach --}}
-                        @if($results)
-                        <datalist name="HeadlineAct" id="HeadlineActArtist">
-                            @foreach($results as $item)
-                            <option value="{{ $item->phone }}">{{ $item->name }}</option>
-                            @endforeach
-                        </datalist>
-                        @endif
+                            @if ($results)
+                                <datalist name="HeadlineAct" id="HeadlineActArtist">
+                                    @foreach ($results as $item)
+                                        <option value="{{ $item->phone }}">{{ $item->name }}</option>
+                                    @endforeach
+                                </datalist>
+                            @endif
+                        </div>
+
+                    </form>
+                </div>
+                <p id="helper-text-explanation" class="mt-2 text-sm text-gray-500 dark:text-gray-400">
+
+                    @if (session()->has('message'))
+                        <div class="text-sm text-green-800">
+                            <span class="font-medium">{{ session('message') }}</span>
+                        </div>
+                    @endif
+                </p>
+
+                @if (session()->has('error'))
+                    <div class="text-sm text-red-800">
+                        <span class="font-medium">{{ session('error') }}</span>
                     </div>
-
-                </form>
-            </div>
-            <p id="helper-text-explanation" class="mt-2 text-sm text-gray-500 dark:text-gray-400">
-
-                @if (session()->has('message'))
-            <div class="text-sm text-green-800">
-                <span class="font-medium">{{ session('message') }}</span>
-            </div>
-            @endif
-            </p>
-
-            @if(session()->has('error'))
-            <div class="text-sm text-red-800">
-                <span class="font-medium">{{ session('error') }}</span>
-            </div>
-            @endif
-            {{-- @if (session('message'))
+                @endif
+                {{-- @if (session('message'))
             <div class="text-sm text-green-800">
                 <span class="font-medium">{{ session('message') }}</span>
             </div>
@@ -345,77 +365,78 @@
                 <span class="font-medium">{{ $order->member->name }}</span>
             </div>
             @endif --}}
-        </div>
+            </div>
 
-        <div class="px-8 pb-5 mt-8 border-b border-gray-100">
-            <div class="flex justify-between">
-                <span class="text-sm font-medium text-gray-900">Total Harga ({{ $total_qty }} barang)</span>
-                <span class="text-sm font-medium text-gray-900">
-                    @if ($total_price != 0)
-                    <span>Rp{{ number_format($total_price, 0, ',', '.') }}</span>
+            <div class="px-8 pb-5 mt-8 border-b border-gray-100">
+                <div class="flex justify-between">
+                    <span class="text-sm font-medium text-gray-900">Total Harga ({{ $total_qty }} barang)</span>
+                    <span class="text-sm font-medium text-gray-900">
+                        @if ($total_price != 0)
+                            <span>Rp{{ number_format($total_price, 0, ',', '.') }}</span>
+                        @endif
+                    </span>
+                </div>
+                <div class="flex justify-between">
+                    @if ($discount_code != '')
+                        <span class="text-sm font-medium text-gray-900">Total Diskon</span>
+                        <span
+                            class="text-sm font-medium text-gray-900">-Rp{{ number_format($discount_price, 0, ',', '.') }}</span>
                     @endif
-                </span>
-            </div>
-            <div class="flex justify-between">
-                @if($discount_code != '')
-                <span class="text-sm font-medium text-gray-900">Total Diskon</span>
-                <span class="text-sm font-medium text-gray-900">-Rp{{ number_format($discount_price, 0, ',', '.')
-                    }}</span>
-                @endif
-            </div>
-            <div class="flex justify-between">
-                <span class="text-sm font-medium text-gray-900">PPN 5%</span>
-                <span class="text-sm font-medium text-gray-900">Rp{{ number_format($ppn, 0, ',', '.') }}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-sm font-medium text-gray-900">PPN 5%</span>
+                    <span class="text-sm font-medium text-gray-900">Rp{{ number_format($ppn, 0, ',', '.') }}</span>
 
+                </div>
+                <hr class="my-3">
+                <div class="flex justify-between">
+                    <span class="text-lg font-bold text-gray-900">Total Belanja</span>
+                    <span
+                        class="text-lg font-bold text-gray-900">Rp{{ number_format($grand_total, 0, ',', '.') }}</span>
+                </div>
             </div>
-            <hr class="my-3">
-            <div class="flex justify-between">
-                <span class="text-lg font-bold text-gray-900">Total Belanja</span>
-                <span class="text-lg font-bold text-gray-900">Rp{{ number_format($grand_total, 0, ',', '.') }}</span>
-            </div>
-        </div>
 
-        {{-- diskon --}}
-        <div class="px-8 pb-5 mt-8 border-b border-gray-100">
-            <div class="relative mb-2">
-                <form class="max-w-full mx-auto" wire:submit="discount">
-                    <label for="default-search"
-                        class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
-                    <div class="relative">
-                        <div class="absolute inset-y-0 flex items-center pointer-events-none start-0 ps-3">
-                            <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true"
-                                xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
-                                viewBox="0 0 24 24">
-                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                    stroke-width="2"
-                                    d="M3 10h18M6 14h2m3 0h5M3 7v10a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1Z" />
-                            </svg>
+            {{-- diskon --}}
+            <div class="px-8 pb-5 mt-8 border-b border-gray-100">
+                <div class="relative mb-2">
+                    <form class="max-w-full mx-auto" wire:submit="discount">
+                        <label for="default-search"
+                            class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 flex items-center pointer-events-none start-0 ps-3">
+                                <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true"
+                                    xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
+                                    viewBox="0 0 24 24">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="M3 10h18M6 14h2m3 0h5M3 7v10a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1Z" />
+                                </svg>
+                            </div>
+                            <input type="text" wire:model="discount_code"
+                                class="block w-full p-4 text-sm text-gray-900 border border-gray-300 rounded-lg ps-10 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                placeholder="Masukkan kode promo" />
+                            <button type="submit"
+                                class="text-white absolute end-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">pakai</button>
                         </div>
-                        <input type="text" wire:model="discount_code"
-                            class="block w-full p-4 text-sm text-gray-900 border border-gray-300 rounded-lg ps-10 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                            placeholder="Masukkan kode promo" />
-                        <button type="submit"
-                            class="text-white absolute end-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">pakai</button>                            
+                    </form>
+
+                </div>
+                @if ($discount_code != '')
+                    <div class="flex justify-between">
+                        <span class="text-sm font-medium text-gray-900">{{ $discount_total }} Diskon</span>
+                        <span
+                            class="text-sm font-medium text-blue-700">Rp{{ number_format($discount_price, 0, ',', '.') }}</span>
                     </div>
-                </form>
+                @endif
 
             </div>
-            @if($discount_code != '')
-            <div class="flex justify-between">
-                <span class="text-sm font-medium text-gray-900">{{ $discount_total }} Diskon</span>
-                <span class="text-sm font-medium text-blue-700">Rp{{ number_format($discount_price, 0, ',', '.')
-                    }}</span>
-            </div>
-            @endif
-            
-        </div>
 
-        <div class="px-8 pb-5 mt-5">
-            <button type="button" wire:click="confirmOrder"
-                class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 w-full">
-                Konfirmasi Pembayaran
-            </button>
-        </div>
+            <div class="px-8 pb-5 mt-5">
+                <button type="button" wire:click="confirmOrder"
+                    class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 w-full">
+                    Konfirmasi Pembayaran
+                </button>
+            </div>
         @endif
     </div>
     {{-- end right content --}}
