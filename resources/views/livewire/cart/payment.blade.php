@@ -247,7 +247,7 @@
                         <span class="text-sm font-normal text-gray-800">Qris</span>
                     </div>
                     <div class="flex justify-between">
-                        <span class="text-sm font-normal text-gray-600">Total Harga ({{ $total_qty }})</span>
+                        <span class="text-sm font-normal text-gray-600">Total Harga ({{ $total_qty }} Barang)</span>
                         <span class="text-sm font-normal text-gray-800">Rp{{ number_format($total_price, 0, ',', '.')
                             }}</span>
                     </div>

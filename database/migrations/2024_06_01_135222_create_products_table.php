@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('product_name');
             $table->integer('selling_price');
+            $table->string('sku');
             $table->integer('stock');
             $table->string('color');
             $table->string('image')->nullable();

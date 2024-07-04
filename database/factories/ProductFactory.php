@@ -19,6 +19,7 @@ class ProductFactory extends Factory
         return [
             'product_name' => fake()->word(),
             'selling_price' => fake()->numberBetween(100, 2000),
+            'sku' => fake()->word(),
             'stock' => fake()->numberBetween(1, 100),
             'color' => fake()->colorName(),
             'image' => fake()->imageUrl(),
