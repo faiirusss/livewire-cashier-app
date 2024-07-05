@@ -316,34 +316,20 @@
                 <label for="helper-text" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                     Member
                 </label>
-                <div class="relative mb-2">
-                    <form wire:submit="member">
-                        <div class="absolute inset-y-0 flex items-center px-2 pointer-events-none start-0 border-e">
-                            <span class="text-sm text-gray-500">+62</span>
-                        </div>
-                        <input type="text" wire:model.live.debounce.550ms="phone_member" list="HeadlineActArtist"
-                            id="HeadlineAct"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                            placeholder="Masukkan nomor telepon" required autocomplete="off">
-                        <div class="absolute w-full mt-2 overflow-hidden rounded-md bg-gray-50">
-                            {{-- @foreach ($results as $item)
-                        <div class="px-3 py-2 cursor-pointer hover:bg-slate-100">
-                            <p class="text-sm font-medium text-gray-600" value>{{ $item->phone }}</p>
-                        </div>
-                        @endforeach --}}
-                            @if ($results)
-                                <datalist name="HeadlineAct" id="HeadlineActArtist">
-                                    @foreach ($results as $item)
-                                        <option value="{{ $item->phone }}">{{ $item->name }}</option>
-                                    @endforeach
-                                </datalist>
-                            @endif
-                        </div>
+                <form wire:submit="member" class="flex" wire:ignore>
+                    <select id="phone-member" class="member mt-1.5 w-full rounded-lg"
+                        data-placeholder="Masukkan Nomor Telepon" wire:model="phone_member">
+                        @foreach ($members as $item)
+                            <option value=""></option>
+                            <option value="{{ $item->phone }}" data-name="{{ $item->name }}">{{ $item->phone }}
+                            </option>
+                        @endforeach
+                    </select>
+                    <button
+                        class="px-3 text-sm font-semibold border border-gray-400 rounded-sm font-semi ms-2 bg-gray-50 text-slate-600">kirim</button>
+                </form>
 
-                    </form>
-                </div>
                 <p id="helper-text-explanation" class="mt-2 text-sm text-gray-500 dark:text-gray-400">
-
                     @if (session()->has('message'))
                         <div class="text-sm text-green-800">
                             <span class="font-medium">{{ session('message') }}</span>
@@ -351,9 +337,19 @@
                     @endif
                 </p>
 
-                @if (session()->has('error'))
-                    <div class="text-sm text-red-800">
-                        <span class="font-medium">{{ session('error') }}</span>
+                @if (session()->has('member_message'))
+                    <div class="flex items-center gap-2 p-2 text-sm border border-gray-300 rounded-lg text-slate-800 bg-slate-100"
+                        role="alert">
+                        <svg class="w-4 h-4 text-blue-600 dark:text-white" aria-hidden="true"
+                            xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
+                            viewBox="0 0 24 24">
+                            <path fill-rule="evenodd"
+                                d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm13.707-1.293a1 1 0 0 0-1.414-1.414L11 12.586l-1.793-1.793a1 1 0 0 0-1.414 1.414l2.5 2.5a1 1 0 0 0 1.414 0l4-4Z"
+                                clip-rule="evenodd" />
+                        </svg>
+                        <div>
+                            {{ session('member_message') }}
+                        </div>
                     </div>
                 @endif
                 {{-- @if (session('message'))
@@ -440,5 +436,46 @@
         @endif
     </div>
     {{-- end right content --}}
+
+    <script>
+        $(document).ready(function() {
+            function formatResult(option) {
+                if (!option.id) {
+                    return option.text;
+                }
+                var name = $(option.element).data('name');
+                return name ? name : option.text;
+            }
+
+            function formatSelection(option) {
+                if (!option.id) {
+                    return option.text;
+                }
+                var name = $(option.element).data('name');
+                return name ? name : option.text;
+            }
+
+            $('.member').select2({
+                placeholder: 'Masukkan Nomor Telepon',
+                allowClear: true,
+                minimumInputLength: 2,
+                minimumResultsForSearch: 1,
+                tags: true,
+                language: {
+                    inputTooShort: function(args) {
+                        var remainingChars = args.minimum - args.input.length;
+                        return 'Ketikkan minimal ' + remainingChars + ' karakter';
+                    }
+                },
+                templateResult: formatResult,
+                templateSelection: formatSelection
+            });
+
+            $('#phone-member').on('change', function(e) {
+                var data = $('#phone-member').select2("val")
+                @this.set('phone_member', data)
+            })
+        });
+    </script>
 
 </div>

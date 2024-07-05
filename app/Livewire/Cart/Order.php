@@ -3,6 +3,7 @@
 namespace App\Livewire\Cart;
 
 use App\Models\Member;
+use App\Models\Order as ModelsOrder;
 use App\Models\OrderProduct;
 use App\Models\Product;
 use Livewire\Component;
@@ -34,6 +35,7 @@ class Order extends Component
                 ->with('orderProducts')
                 ->latest()
                 ->first();
+                
         $this->total_price = $this->order->total_price ?? 0;
         $this->total_qty = $this->order->total_qty ?? 0;
         $this->ppn = ceil($this->total_price * 0.05);
@@ -58,6 +60,7 @@ class Order extends Component
         return view('livewire.cart.order', [
             'products' => Product::paginate(10),
             'order' => $this->order,
+            'members' => Member::all(),
             'results' => $results,
         ]);
     }
@@ -81,40 +84,34 @@ class Order extends Component
     }
 
     public function member()
-    {
-        $member = Member::where('phone', $this->phone_member)->first();
+    {        
 
-        if ($member == null) {
+        $member = Member::where('phone', $this->phone_member)->first();
+        $order = \App\Models\Order::where('done_at', null)
+                ->latest()
+                ->first();
+        // member sudah ada
+        if($member)
+        {
+            if ($order) {
+                $order->update([
+                    'member_id' => $member->id
+                ]);
+                session()->flash('member_message', 'Member berhasil digunakan');
+            }         
+        } else {
             $member = Member::firstOrCreate([
                 'phone' => $this->phone_member,
             ]);
 
-            $order = \App\Models\Order::where('done_at', null)
-                    ->latest()
-                    ->first();
-
             if ($order) {
                 $order->update([
                     'member_id' => $member->id
                 ]);
             }
-
-            session()->flash('message', 'Member baru berhasil dibuat');
-        } else {
-            $order = \App\Models\Order::where('done_at', null)
-                    ->latest()
-                    ->first();
-
-            if ($order) {
-                $order->update([
-                    'member_id' => $member->id
-                ]);
-            }
-            $this->name_member = $member->name; 
-            session()->flash('message', 'Nama Member: ' . $this->name_member);
+            session()->flash('member_message', 'Member Baru');
         }
-
-    }
+    }    
 
     public function confirmOrder()
     {
@@ -193,7 +190,7 @@ class Order extends Component
                     }
                 }
             }
-
+            
             else {
                 session()->flash('product_error', 'Stok Barang Habis!');
                 // dd('stok abis');
@@ -257,16 +254,28 @@ class Order extends Component
     }
 
     function removeCart($id){
+
         $orderProduct = OrderProduct::where('order_id', $this->order->id)
                     ->where('product_id', $id)
                     ->first();
-        $product = $orderProduct;
-        if($product->count() > 1){
-            $orderProduct->delete();
-        } else if ($product->count() == 1) {
-            $orderProduct->delete();
-            $this->order->delete();
-            $this->redirect('/order');
+
+        if ($orderProduct) {        
+            $order = \App\Models\Order::where('done_at', null)
+                ->with('orderProducts')
+                ->latest()
+                ->first();
+
+            if ($order) {                
+                $orderProductCount = $order->orderProducts->count();
+
+                if ($orderProductCount > 1) {                  
+                    $orderProduct->delete();
+                } else {                    
+                    $orderProduct->delete();
+                    $order->delete();
+                    $this->redirect('/order');
+                }
+            }
         }
     }    
     function generateUniqueCode($length = 6) {
