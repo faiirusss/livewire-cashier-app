@@ -118,10 +118,9 @@ class Order extends Component
         $discount_total = $this->discount_total ?? 0;
         $discount_price = $this->discount_price ?? 0;
         $grand_total = $this->grand_total;
-        
+
         $order = \App\Models\Order::where('done_at', null)->latest()
         ->first();  
-
         if($order->member_id == null){
             session()->flash('error', 'member harus diisi!');
             return;
@@ -132,8 +131,6 @@ class Order extends Component
             'discount_price' => $discount_price,
             'grand_total' => $grand_total,
         ]);
-
-      
 
         $this->redirect('/payment');                
     }
@@ -186,11 +183,16 @@ class Order extends Component
                             'product_id' => $product->id,
                             'unit_price' => $product->selling_price,
                             'quantity' => 1
-                        ]);
+                        ]);                        
+
+                        $orderProductCount = $this->order->orderProducts->count();
+                        if($orderProductCount == 1)
+                        {
+                            return redirect()->route('order');
+                        }
                     }
                 }
-            }
-            
+            }            
             else {
                 session()->flash('product_error', 'Stok Barang Habis!');
                 // dd('stok abis');
@@ -198,20 +200,13 @@ class Order extends Component
 
         } else {
             session()->flash('product_error', 'Produk Tidak Tersedia!');
-        }
-
-
-        
-
+        }    
         $this->reset('search');
     }
 
     public function updateCart($isAdded = true, $id)
     {   
-        // $product = Product::where('id', $this->search)->first();
-        // dd($product);
-        try {
-            
+        try {            
             if($this->order)
             { 
                 $product = Product::findOrFail($id);
@@ -270,14 +265,15 @@ class Order extends Component
 
                 if ($orderProductCount > 1) {                  
                     $orderProduct->delete();
-                } else {                    
+                } else {                        
                     $orderProduct->delete();
                     $order->delete();
                     $this->redirect('/order');
                 }
             }
         }
-    }    
+    }  
+
     function generateUniqueCode($length = 6) {
         $number = uniqid();
         $varray = str_split($number);
@@ -288,6 +284,5 @@ class Order extends Component
 
         return $uniq;
     }
-
 
 }
