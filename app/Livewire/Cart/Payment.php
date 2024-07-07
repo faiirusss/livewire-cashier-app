@@ -25,16 +25,6 @@ class Payment extends Component
                 ->latest()
                 ->first();
 
-        // $orderProduct = $this->order->orderProducts->all();
-
-        // $grand_total = $this->order->grand_total;
-        // $this->return_amount = $this->paid_amount - $grand_total;
-        
-        // foreach ($orderProduct as $itemProduct) {
-        //    $this->total_qty += $itemProduct->quantity;
-        //    $this->total_price += $itemProduct->unit_price * $itemProduct->quantity;
-
-        // }
         $this->total_qty = 0;
         $this->total_price = 0;
         foreach ($this->order->orderProducts as $itemProduct) {
@@ -47,7 +37,6 @@ class Payment extends Component
             'order' => $this->order,
             // 'orderProduct' => $orderProduct
         ]);
-
     }    
 
     public function payment()
@@ -56,8 +45,6 @@ class Payment extends Component
             'paid_amount' => 'required|numeric',
         ]);
 
-
-        // Perhitungan total_qty dan total_price
         $this->total_qty = 0;
         $this->total_price = 0;
         foreach ($this->order->orderProducts as $itemProduct) {
@@ -65,10 +52,8 @@ class Payment extends Component
             $this->total_price += $itemProduct->unit_price * $itemProduct->quantity;
         }
 
-        // Perhitungan return_amount
         $this->return_amount = $this->paid_amount - $this->order->grand_total;
 
-        // Update order dengan informasi pembayaran
         if($this->paid_amount > $this->order->grand_total) {
             
             $this->order->update([
@@ -76,10 +61,10 @@ class Payment extends Component
                 'return_amount' => $this->return_amount,
                 'payment_method' => 'Cash',
             ]);
-            $this->isModalOpen = true; // Modal tetap terbuka setelah pembayaran
+            $this->isModalOpen = true; 
             
         } else {
-            $this->isModalOpen = true; // Modal tetap terbuka setelah pembayaran
+            $this->isModalOpen = true;
             $this->reset('paid_amount');
             session()->flash('error_payment', 'Uang yang dibayar kurang!');
         }
@@ -115,4 +100,5 @@ class Payment extends Component
         ]);
         return redirect()->route('order');
     }
+    
 }

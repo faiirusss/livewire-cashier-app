@@ -3,7 +3,6 @@
 namespace App\Livewire\Cart;
 
 use App\Models\Member;
-use App\Models\Order as ModelsOrder;
 use App\Models\OrderProduct;
 use App\Models\Product;
 use Livewire\Component;
@@ -63,77 +62,7 @@ class Order extends Component
             'members' => Member::all(),
             'results' => $results,
         ]);
-    }
-
-    public function discount()
-    {
-        $discount_code = $this->discount_code;
-
-        if($discount_code === 'FAIRUS123') 
-        {
-            $this->discount_total = '10%';
-            $this->discount_price = $this->order->total_price * 0.1;
-        } else {
-            $this->discount_price = 0;
-            $this->discount_total = 0;
-            $this->grand_total = $this->total_price + $this->ppn;
-
-            session()->flash('error_promo', 'Kode Diskon Tidak Valid');
-        }
-        return $this->discount_price;
-    }
-
-    public function member()
-    {        
-
-        $member = Member::where('phone', $this->phone_member)->first();
-        $order = \App\Models\Order::where('done_at', null)
-                ->latest()
-                ->first();
-        // member sudah ada
-        if($member)
-        {
-            if ($order) {
-                $order->update([
-                    'member_id' => $member->id
-                ]);
-                session()->flash('member_message', 'Member berhasil digunakan');
-            }         
-        } else {
-            $member = Member::firstOrCreate([
-                'phone' => $this->phone_member,
-            ]);
-
-            if ($order) {
-                $order->update([
-                    'member_id' => $member->id
-                ]);
-            }
-            session()->flash('member_message', 'Member Baru');
-        }
-    }    
-
-    public function confirmOrder()
-    {
-        $discount_total = $this->discount_total ?? 0;
-        $discount_price = $this->discount_price ?? 0;
-        $grand_total = $this->grand_total;
-
-        $order = \App\Models\Order::where('done_at', null)->latest()
-        ->first();  
-        if($order->member_id == null){
-            session()->flash('error', 'member harus diisi!');
-            return;
-        }
-        
-        $order->update([
-            'discount_type' => $discount_total,
-            'discount_price' => $discount_price,
-            'grand_total' => $grand_total,
-        ]);
-
-        $this->redirect('/payment');                
-    }
+    }          
 
     public function createOrder($isAdded = true)
     { 
@@ -273,6 +202,78 @@ class Order extends Component
             }
         }
     }  
+    
+    public function confirmOrder()
+    {
+        $discount_total = $this->discount_total ?? 0;
+        $discount_price = $this->discount_price ?? 0;
+        $grand_total = $this->grand_total;
+
+        $order = \App\Models\Order::where('done_at', null)->latest()
+        ->first(); 
+
+        if($order->member_id == null){
+            session()->flash('order_error', 'member harus diisi!');
+            return;
+        }
+        
+        $order->update([
+            'discount_type' => $discount_total,
+            'discount_price' => $discount_price,
+            'grand_total' => $grand_total,
+        ]);
+
+        $this->redirect('/payment');                
+    }
+
+    public function member()
+    {        
+
+        $member = Member::where('phone', $this->phone_member)->first();
+        $order = \App\Models\Order::where('done_at', null)
+                ->latest()
+                ->first();
+        // member sudah ada
+        if($member)
+        {
+            if ($order) {
+                $order->update([
+                    'member_id' => $member->id
+                ]);
+                session()->flash('member_message', 'Member berhasil digunakan');
+            }         
+        } else {
+            $member = Member::firstOrCreate([
+                'phone' => $this->phone_member,
+            ]);
+
+            if ($order) {
+                $order->update([
+                    'member_id' => $member->id
+                ]);
+            }
+            session()->flash('member_message', 'Member Baru');
+        }
+    }  
+
+    public function discount()
+    {
+        $discount_code = $this->discount_code;
+
+        if($discount_code == 'FAIRUS123') 
+        {
+            $this->discount_total = '10%';
+            $this->discount_price = $this->order->total_price * 0.1;
+            session()->flash('promo_message', 'Digunakan');
+        } else {
+            $this->discount_price = 0;
+            $this->discount_total = 0;
+            $this->grand_total = $this->total_price + $this->ppn;
+
+            session()->flash('promo_message', 'Kode Diskon Tidak Valid');
+        }
+        return $this->discount_price;
+    }
 
     function generateUniqueCode($length = 6) {
         $number = uniqid();

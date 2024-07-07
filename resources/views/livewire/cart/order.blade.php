@@ -136,7 +136,7 @@
      {{-- end middle content --}}
 
      {{-- right content --}}
-     <div class="flex flex-col w-4/12 max-h-screen bg-white">
+     <div class="flex flex-col justify-between w-4/12 max-h-screen bg-white">
          @if ($order)
              <div class="px-2 py-7 max-w-screen sm:px-6 lg:px-8">
                  <h3 class="pb-5 text-xl font-bold border-b">Ringkasan Belanja</h3>
@@ -156,11 +156,12 @@
                      </dl>
                  </div>
              </div>
+
              <div class="px-8 pb-5 mt-5 border-b border-gray-100">
                  <label for="helper-text" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                      Member
                  </label>
-                 <div class="p-2 border border-gray-200 rounded-md bg-gray-50" wire:ignore>
+                 <div class="p-2 mb-2 border border-gray-200 rounded-md bg-gray-50" wire:ignore>
                      <form wire:submit="member" class="flex">
                          <select id="phone-member" class="member mt-1.5 w-full rounded-lg"
                              data-placeholder="Masukkan Nomor Telepon" wire:model="phone_member">
@@ -184,13 +185,6 @@
                          </button>
                      </form>
                  </div>
-                 <p id="helper-text-explanation" class="mt-2 text-sm text-gray-500 dark:text-gray-400">
-                     @if (session()->has('message'))
-                         <div class="text-sm text-green-800">
-                             <span class="font-medium">{{ session('message') }}</span>
-                         </div>
-                     @endif
-                 </p>
 
                  @if (session()->has('member_message'))
                      <div class="flex items-center gap-2 p-2 text-sm border border-gray-300 rounded-lg text-slate-800 bg-slate-100"
@@ -207,7 +201,23 @@
                          </div>
                      </div>
                  @endif
+                 @if (session()->has('order_error'))
+                     <div class="flex items-center gap-2 p-2 text-sm border border-red-100 rounded-lg bg-red-50 text-slate-800"
+                         role="alert">
+                         <svg class="w-4 h-4 text-red-800 dark:text-white" aria-hidden="true"
+                             xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
+                             viewBox="0 0 24 24">
+                             <path fill-rule="evenodd"
+                                 d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm11-4a1 1 0 1 0-2 0v5a1 1 0 1 0 2 0V8Zm-1 7a1 1 0 1 0 0 2h.01a1 1 0 1 0 0-2H12Z"
+                                 clip-rule="evenodd" />
+                         </svg>
+                         <div class="text-red-800">
+                             {{ session('order_error') }}
+                         </div>
+                     </div>
+                 @endif
              </div>
+
              <div class="px-8 pb-5 mt-8 border-b border-gray-100">
                  <div class="flex justify-between">
                      <span class="text-sm font-medium text-gray-900">Total Harga ({{ $total_qty }} barang)</span>
@@ -254,21 +264,50 @@
                                  </svg>
                              </div>
                              <input type="text" wire:model="discount_code"
-                                 class="block w-full p-4 text-sm text-gray-900 border border-gray-300 rounded-lg ps-10 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                 class="block w-full p-3 text-sm text-gray-900 border border-gray-300 rounded-lg ps-10 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                                  placeholder="Masukkan kode promo" />
                              <button type="submit"
-                                 class="text-white absolute end-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">pakai</button>
+                                 class="absolute inset-y-1.5 px-5 py-2 text-sm font-medium text-white bg-blue-700 rounded-lg end-1.5 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Pakai</button>
                          </div>
                      </form>
 
                  </div>
                  @if ($discount_code != '')
-                     <div class="flex justify-between">
-                         <span class="text-sm font-medium text-gray-900">{{ $discount_total }} Diskon</span>
-                         <span
-                             class="text-sm font-medium text-blue-700">Rp{{ number_format($discount_price, 0, ',', '.') }}</span>
-                     </div>
+                     @if (session()->has('promo_message'))
+                         @if ($discount_price > 0)
+                             <div class="flex items-center justify-between mt-4">
+                                 <span class="flex gap-1 text-sm font-medium text-gray-900">
+                                     <svg class="w-4 h-4 text-blue-800 dark:text-white" aria-hidden="true"
+                                         xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                         fill="currentColor" viewBox="0 0 24 24">
+                                         <path fill-rule="evenodd"
+                                             d="M20.29 8.567c.133.323.334.613.59.85v.002a3.536 3.536 0 0 1 0 5.166 2.442 2.442 0 0 0-.776 1.868 3.534 3.534 0 0 1-3.651 3.653 2.483 2.483 0 0 0-1.87.776 3.537 3.537 0 0 1-5.164 0 2.44 2.44 0 0 0-1.87-.776 3.533 3.533 0 0 1-3.653-3.654 2.44 2.44 0 0 0-.775-1.868 3.537 3.537 0 0 1 0-5.166 2.44 2.44 0 0 0 .775-1.87 3.55 3.55 0 0 1 1.033-2.62 3.594 3.594 0 0 1 2.62-1.032 2.401 2.401 0 0 0 1.87-.775 3.535 3.535 0 0 1 5.165 0 2.444 2.444 0 0 0 1.869.775 3.532 3.532 0 0 1 3.652 3.652c-.012.35.051.697.184 1.02ZM9.927 7.371a1 1 0 1 0 0 2h.01a1 1 0 0 0 0-2h-.01Zm5.889 2.226a1 1 0 0 0-1.414-1.415L8.184 14.4a1 1 0 0 0 1.414 1.414l6.218-6.217Zm-2.79 5.028a1 1 0 1 0 0 2h.01a1 1 0 1 0 0-2h-.01Z"
+                                             clip-rule="evenodd" />
+                                     </svg>
+                                     Diskon {{ $discount_total }} {{ session('promo_message ') }}
+                                 </span>
+                                 <span class="text-sm font-medium text-blue-700">
+                                     Rp{{ number_format($discount_price, 0, ',', '.') }}
+                                 </span>
+                             </div>
+                         @else
+                             <div class="flex items-center gap-2 p-2 text-sm border border-red-100 rounded-lg bg-red-50 text-slate-800"
+                                 role="alert">
+                                 <svg class="w-4 h-4 text-red-800 dark:text-white" aria-hidden="true"
+                                     xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                     fill="currentColor" viewBox="0 0 24 24">
+                                     <path fill-rule="evenodd"
+                                         d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm11-4a1 1 0 1 0-2 0v5a1 1 0 1 0 2 0V8Zm-1 7a1 1 0 1 0 0 2h.01a1 1 0 1 0 0-2H12Z"
+                                         clip-rule="evenodd" />
+                                 </svg>
+                                 <div class="text-red-800">
+                                     {{ session('promo_message') }}
+                                 </div>
+                             </div>
+                         @endif
+                     @endif
                  @endif
+
              </div>
 
              <div class="px-8 pb-5 mt-5">
