@@ -4,6 +4,8 @@ namespace App\Livewire\Cart;
 
 use App\Models\Order;
 use Livewire\Component;
+use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
+use Mike42\Escpos\Printer;
 
 class Payment extends Component
 
@@ -98,6 +100,107 @@ class Payment extends Component
             'payment_method' => 'Qris',            
             'done_at' => now()
         ]);
+        return redirect()->route('order');
+    }  
+
+    public function pay()
+    {        
+
+        $this->order = Order::where('done_at', null)
+        ->with('orderProducts')
+        ->latest()
+        ->first();
+
+        $paid_amount = $this->order->grand_total;        
+
+        $this->order->update([
+            'paid_amount' => $paid_amount,
+            'payment_method' => 'Qris',            
+            'done_at' => now(),
+            'return_amount' => 0
+        ]);             
+
+        $orderId = strtoupper($this->order->invoice_number);
+        $cashier = auth()->user()->name; // Assuming the cashier is the authenticated user
+        $member = $this->order->member->name ?? $this->order->member->phone;
+        $address = 'Jl. Binong Jati No.124'; // Replace with actual address
+        $address2 = 'Kec.Batununggal, Bandung, 40275'; // Replace with actual address
+        $phone = '0856-2401-0106'; // Replace with actual phone number
+        $date = $this->order->created_at->format('Y-m-d H:i');
+        $pembayaran = 'Qris';
+        $bayar = $this->order->paid_amount;
+        $kembali = 0;
+        
+        
+        function centerText($text, $width = 32) {
+            if (strlen($text) >= $width) {
+                return $text; // If the text is longer than or equal to the width, return it as is.
+            }
+            $padding = floor(($width - strlen($text)) / 2);
+            return str_repeat(' ', $padding) . $text;
+            }
+
+        // Format the receipt text
+        $text = centerText('Merajut Asa') . "\n";
+        $text .= centerText($address) . "\n";
+        $text .= centerText($address2) . "\n";
+        $text .= centerText($phone) . "\n\n";
+
+        $text .= "Tanggal   : $date\n";
+        $text .= "Order ID  : $orderId\n";
+        $text .= "Kasir     : $cashier\n";
+        $text .= "Member    : $member\n";
+        $text .= "--------------------------------\n";
+
+        $nameWidth = 16;
+        $qtyWidth = 5;
+        $priceWidth = 11;
+        $this->total_qty = 0;
+        $this->total_price = 0;
+
+        foreach ($this->order->orderProducts as $product) {
+            $productName = $product->product->product_name;
+            $quantity = $product->quantity; 
+            $totalPrice = number_format($product->unit_price * $quantity);
+            $this->total_qty += $quantity;
+            $this->total_price += $product->unit_price * $product->quantity;
+            $diskon = number_format($this->order->discount_price);
+
+            $paddedName = str_pad($productName, $nameWidth);
+            $paddedQty = str_pad($quantity, $qtyWidth, ' ', STR_PAD_LEFT);
+            $paddedPrice = str_pad($totalPrice, $priceWidth, ' ', STR_PAD_LEFT);
+
+            $text .= "$paddedName$paddedQty$paddedPrice\n";                  
+        }    
+
+
+        $text .= "--------------------------------\n";
+        
+        $text .= "Sub Total     : " . number_format($this->total_price) ."($this->total_qty)". "\n";
+        $text .= "Diskon        : " . number_format($diskon) . "\n";
+        $this->ppn = ceil($this->total_price * 0.05);
+
+        $text .= "PPN           : " . number_format($this->ppn) . "\n";
+        
+        $text .= "--------------------------------\n";
+        
+        $text .= "Total         : " . number_format($this->order->grand_total) . "\n";
+        $text .= "Pembayaran    : $pembayaran\n";
+        $text .= "Bayar         : " . number_format($bayar) . "\n";
+        $text .= "Kembali       : $kembali\n";
+        
+        $text .= "--------------------------------\n";
+        $text .= centerText('Terima Kasih') . "\n";
+        
+        try {
+            $connector = new WindowsPrintConnector("RP58-Printer");
+            $printer = new Printer($connector);
+            $printer->text($text);
+            $printer->cut();
+            $printer->close();
+        } catch (\Exception $e) {
+            error_log($e->getMessage());
+        }
         return redirect()->route('order');
     }
     
