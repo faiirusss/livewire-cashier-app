@@ -49,8 +49,6 @@ class Order extends Component
             $this->grand_total = $this->total_price + $this->ppn;
         }       
 
-        $member = Member::all();
-
         $results = [];
         if(strlen($this->phone_member) > 0) {
             $results = Member::where('phone', 'like', '%'.$this->phone_member.'%')->get();
@@ -66,16 +64,6 @@ class Order extends Component
 
     public function createOrder($isAdded = true)
     { 
-        $this->order = \App\Models\Order::where('done_at', null)
-                    ->latest()
-                    ->first();        
-
-        if($this->order == null)
-        {
-            $this->order = \App\Models\Order::create([
-                'invoice_number' => $this->generateUniqueCode(),
-            ]);
-        }
 
         // mencari product dengan id 
         $product = Product::where('id', $this->search)
@@ -86,6 +74,16 @@ class Order extends Component
         {
             if($product->stock >= 1)
             {
+                $this->order = \App\Models\Order::where('done_at', null)
+                    ->latest()
+                    ->first();        
+
+                if($this->order == null)
+                {
+                    $this->order = \App\Models\Order::create([
+                        'invoice_number' => $this->generateUniqueCode(),
+                    ]);
+                }
                 // mencari product di order product 
                 $orderProduct = OrderProduct::where('order_id', $this->order->id)
                     ->where('product_id', $this->search)
@@ -213,7 +211,7 @@ class Order extends Component
         ->first(); 
 
         if($order->member_id == null){
-            session()->flash('order_error', 'member harus diisi!');
+            session()->flash('order_error', 'Member harus diisi!');
             return;
         }
         
@@ -229,30 +227,35 @@ class Order extends Component
     public function member()
     {        
 
-        $member = Member::where('phone', $this->phone_member)->first();
-        $order = \App\Models\Order::where('done_at', null)
-                ->latest()
-                ->first();
-        // member sudah ada
-        if($member)
-        {
-            if ($order) {
-                $order->update([
-                    'member_id' => $member->id
+        if($this->phone_member != null){
+            $member = Member::where('phone', $this->phone_member)->first();
+            $order = \App\Models\Order::where('done_at', null)
+                    ->latest()
+                    ->first();
+            // member sudah ada
+            if($member)
+            {
+                if ($order) {
+                    $order->update([
+                        'member_id' => $member->id
+                    ]);
+                    session()->flash('member_message', 'Member berhasil digunakan');
+                }         
+            } else {
+                $member = Member::firstOrCreate([
+                    'phone' => $this->phone_member,
                 ]);
-                session()->flash('member_message', 'Member berhasil digunakan');
-            }         
-        } else {
-            $member = Member::firstOrCreate([
-                'phone' => $this->phone_member,
-            ]);
 
-            if ($order) {
-                $order->update([
-                    'member_id' => $member->id
-                ]);
+                if ($order) {
+                    $order->update([
+                        'member_id' => $member->id
+                    ]);
+                }
+                session()->flash('member_message', 'Member Baru');
             }
-            session()->flash('member_message', 'Member Baru');
+
+        } else {
+            session()->flash('member_message', 'Member harus diisi');
         }
     }  
 

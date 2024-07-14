@@ -161,7 +161,7 @@
                                 class="text-lg font-bold text-gray-800">Rp{{ number_format($order->grand_total, 0, ',', '.') }}</span>
                         </div>
                         <div class="p-4 my-5 border-b">
-                            <form class="max-w-full" wire:submit.prevent="payment">
+                            <form class="max-w-full" wire:submit.prevent="payment_cash">
                                 <div class="relative">
                                     <div
                                         class="absolute inset-y-0 start-0 top-0 flex items-center ps-3.5 pointer-events-none">
@@ -211,14 +211,11 @@
                             <span
                                 class="text-sm font-normal text-gray-800">Rp{{ number_format($return_amount, 0, ',', '.') }}</span>
                         </div>
-                        <form wire:submit.prevent="done">
-                            <button type="submit"
-                                class="text-white inline-flex w-full justify-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                                Cetak Struk
-                            </button>
-                        </form>
+                        <button wire:click="pay_cash"
+                            class="text-white inline-flex w-full justify-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                            Cetak Struk
+                        </button>
                     @endif
-
                 </div>
             </div>
         </div>
@@ -304,7 +301,7 @@
                         </svg>
                     </div>
 
-                    <button wire:click="pay"
+                    <button wire:click="pay_qris"
                         class="text-white inline-flex w-full justify-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
                         Cetak Struk
                     </button>

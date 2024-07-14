@@ -138,9 +138,12 @@
      {{-- right content --}}
      <div class="flex flex-col justify-between w-4/12 max-h-screen bg-white">
          @if ($order)
+             {{-- title --}}
              <div class="px-2 py-7 max-w-screen sm:px-6 lg:px-8">
                  <h3 class="pb-5 text-xl font-bold border-b">Ringkasan Belanja</h3>
              </div>
+
+             {{-- info id & date --}}
              <div class="px-8 pb-8 border-b border-gray-100">
                  <div class="flow-root py-3 border border-gray-100 rounded-lg shadow-sm">
                      <dl class="-my-3 text-sm divide-y divide-gray-200 divide-dashed">
@@ -157,6 +160,7 @@
                  </div>
              </div>
 
+             {{-- member --}}
              <div class="px-8 pb-5 mt-5 border-b border-gray-100">
                  <label for="helper-text" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                      Member
@@ -187,19 +191,35 @@
                  </div>
 
                  @if (session()->has('member_message'))
-                     <div class="flex items-center gap-2 p-2 text-sm border border-gray-300 rounded-lg text-slate-800 bg-slate-100"
-                         role="alert">
-                         <svg class="w-4 h-4 text-blue-600 dark:text-white" aria-hidden="true"
-                             xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
-                             viewBox="0 0 24 24">
-                             <path fill-rule="evenodd"
-                                 d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm13.707-1.293a1 1 0 0 0-1.414-1.414L11 12.586l-1.793-1.793a1 1 0 0 0-1.414 1.414l2.5 2.5a1 1 0 0 0 1.414 0l4-4Z"
-                                 clip-rule="evenodd" />
-                         </svg>
-                         <div>
-                             {{ session('member_message') }}
+                     @if ($phone_member)
+                         <div class="flex items-center gap-2 p-2 text-sm border border-gray-300 rounded-lg text-slate-800 bg-slate-100"
+                             role="alert">
+                             <svg class="w-4 h-4 text-blue-600 dark:text-white" aria-hidden="true"
+                                 xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                 fill="currentColor" viewBox="0 0 24 24">
+                                 <path fill-rule="evenodd"
+                                     d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm13.707-1.293a1 1 0 0 0-1.414-1.414L11 12.586l-1.793-1.793a1 1 0 0 0-1.414 1.414l2.5 2.5a1 1 0 0 0 1.414 0l4-4Z"
+                                     clip-rule="evenodd" />
+                             </svg>
+                             <div>
+                                 {{ session('member_message') }}
+                             </div>
                          </div>
-                     </div>
+                     @else
+                         <div class="flex items-center gap-2 p-2 text-sm border border-red-100 rounded-lg bg-red-50 text-slate-800"
+                             role="alert">
+                             <svg class="w-4 h-4 text-red-800 dark:text-white" aria-hidden="true"
+                                 xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                 fill="currentColor" viewBox="0 0 24 24">
+                                 <path fill-rule="evenodd"
+                                     d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm11-4a1 1 0 1 0-2 0v5a1 1 0 1 0 2 0V8Zm-1 7a1 1 0 1 0 0 2h.01a1 1 0 1 0 0-2H12Z"
+                                     clip-rule="evenodd" />
+                             </svg>
+                             <div class="text-red-800">
+                                 {{ session('member_message') }}
+                             </div>
+                         </div>
+                     @endif
                  @endif
                  @if (session()->has('order_error'))
                      <div class="flex items-center gap-2 p-2 text-sm border border-red-100 rounded-lg bg-red-50 text-slate-800"
@@ -218,7 +238,8 @@
                  @endif
              </div>
 
-             <div class="px-8 pb-5 mt-8 border-b border-gray-100">
+             {{-- detail info --}}
+             <div class="px-8 pb-5 mt-5 border-b border-gray-100">
                  <div class="flex justify-between">
                      <span class="text-sm font-medium text-gray-900">Total Harga ({{ $total_qty }} barang)</span>
                      <span class="text-sm font-medium text-gray-900">
@@ -247,8 +268,8 @@
                  </div>
              </div>
 
-             {{-- diskon --}}
-             <div class="px-8 pb-5 mt-8 border-b border-gray-100">
+             {{-- discount --}}
+             <div class="px-8 pb-4 mt-5 border-b border-gray-100">
                  <div class="relative mb-2">
                      <form class="max-w-full mx-auto" wire:submit="discount">
                          <label for="default-search"
@@ -270,7 +291,6 @@
                                  class="absolute inset-y-1.5 px-5 py-2 text-sm font-medium text-white bg-blue-700 rounded-lg end-1.5 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Pakai</button>
                          </div>
                      </form>
-
                  </div>
                  @if ($discount_code != '')
                      @if (session()->has('promo_message'))
@@ -310,6 +330,7 @@
 
              </div>
 
+             {{-- button  --}}
              <div class="px-8 pb-5 mt-5">
                  <button type="button" wire:click="confirmOrder"
                      class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 w-full">
