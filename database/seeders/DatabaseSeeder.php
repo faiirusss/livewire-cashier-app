@@ -77,12 +77,44 @@ class DatabaseSeeder extends Seeder
             'color' => 'Kuning',
             'image' => 'https://via.placeholder.com/640x480.png/0022ee?text=laboriosam',
         ]);
+        \App\Models\Product::create([
+            'product_name' => 'Cardigan Remaja',
+            'selling_price' => 25000,
+            'sku' => 'KR007',
+            'stock' => 100,
+            'color' => 'Kuning',
+            'image' => 'https://via.placeholder.com/640x480.png/0022ee?text=laboriosam',
+        ]);
+        \App\Models\Product::create([
+            'product_name' => 'Topi Anak',
+            'selling_price' => 10000,
+            'sku' => 'KR008',
+            'stock' => 100,
+            'color' => 'Kuning',
+            'image' => 'https://via.placeholder.com/640x480.png/0022ee?text=laboriosam',
+        ]);
+        \App\Models\Product::create([
+            'product_name' => 'Celana Anak',
+            'selling_price' => 18000,
+            'sku' => 'KR009',
+            'stock' => 100,
+            'color' => 'Kuning',
+            'image' => 'https://via.placeholder.com/640x480.png/0022ee?text=laboriosam',
+        ]);
+        \App\Models\Product::create([
+            'product_name' => 'Blues Cardigan',
+            'selling_price' => 34000,
+            'sku' => 'KR0010',
+            'stock' => 100,
+            'color' => 'Kuning',
+            'image' => 'https://via.placeholder.com/640x480.png/0022ee?text=laboriosam',
+        ]);
 
         \App\Models\Product::create([
             'product_name' => 'Cardigan Batik',
             'selling_price' => 25000,
             'sku' => 'KR006',
-            'stock' => 0,
+            'stock' => 10,
             'color' => 'Kuning',
             'image' => 'https://via.placeholder.com/640x480.png/0022ee?text=laboriosam',
         ]);
