@@ -144,9 +144,10 @@ class Payment extends Component
         $text .= "--------------------------------\n";
         
         $space = str_pad("", 3, ' ', STR_PAD_LEFT);
-        $textSubtotal = str_pad("Subtotal " . $this->total_qty . " Produk", 17);
+        $spaceTotal = str_pad("", 2, ' ', STR_PAD_LEFT);
+        $textSubtotal = str_pad("Subtotal " . $this->total_qty . " Produk", 18);
         $subtotal = str_pad(number_format($this->total_price), 12, ' ', STR_PAD_LEFT); 
-        $text .= "$textSubtotal$space$subtotal\n";
+        $text .= "$textSubtotal$spaceTotal$subtotal\n";
 
         $textDiskon = str_pad("Diskon", 17);
         $diskon = str_pad($diskon, 12, ' ', STR_PAD_LEFT);
@@ -259,26 +260,46 @@ class Payment extends Component
             $paddedPrice = str_pad($totalPrice, $priceWidth, ' ', STR_PAD_LEFT);
 
             $text .= "$paddedName$paddedQty$paddedPrice\n";                  
-        }    
-        "\n";
-        $textTotalBarang = str_pad("Total Barang", $nameWidth);
-        $totalBarang = str_pad($this->total_qty, $qtyWidth, ' ', STR_PAD_LEFT);
+        }   
+        // $textTotalBarang = str_pad("Total Barang", $nameWidth);
+        // $totalBarang = str_pad($this->total_qty, $qtyWidth, ' ', STR_PAD_LEFT);
 
-        $text .= "$textTotalBarang$totalBarang\n";
+        // $text .= "$textTotalBarang$totalBarang\n";
         $text .= "--------------------------------\n";
         
-        $text .= "Sub Total     : " . number_format($this->total_price) . "\n";
-        $text .= "Diskon        : " . number_format($diskon) . "\n";
+        $space = str_pad("", 3, ' ', STR_PAD_LEFT);
+        $spaceTotal = str_pad("", 2, ' ', STR_PAD_LEFT);
+
+        $textSubtotal = str_pad("Subtotal " . $this->total_qty . " Produk", 18);
+        $subtotal = str_pad(number_format($this->total_price), 12, ' ', STR_PAD_LEFT); 
+        $text .= "$textSubtotal$spaceTotal$subtotal\n";
+        
+        $textDiskon = str_pad("Diskon", 17);
+        $diskon = str_pad($diskon, 12, ' ', STR_PAD_LEFT);
+        $text .= "$textDiskon$space$diskon\n";
+
         $this->ppn = ceil($this->total_price * 0.05);
-
-        $text .= "PPN           : " . number_format($this->ppn) . "\n";
+        $textPpn = str_pad("PPN", 17);
+        $ppn = str_pad(number_format($this->ppn), 12, ' ', STR_PAD_LEFT);
+        $text .= "$textPpn$space$ppn\n";
         
         $text .= "--------------------------------\n";
         
-        $text .= "Total         : " . number_format($this->order->grand_total) . "\n";
-        $text .= "Pembayaran    : $pembayaran\n";
-        $text .= "Bayar         : " . number_format($bayar) . "\n";
-        $text .= "Kembali       : " . number_format($kembali) . "\n";
+        $textTotal = str_pad("Total", 17);
+        $total = str_pad(number_format($this->order->grand_total), 12, ' ', STR_PAD_LEFT);
+        $text .= "$textTotal$space$total\n";
+
+        $textPembayaran = str_pad("Pembayaran", 17);
+        $pembayaranValue = str_pad($pembayaran, 12, ' ', STR_PAD_LEFT);
+        $text .= "$textPembayaran$space$pembayaranValue\n";
+
+        $textBayar = str_pad("Bayar", 17);
+        $bayar = str_pad(number_format($bayar), 12, ' ', STR_PAD_LEFT);
+        $text .= "$textBayar$space$bayar\n";
+
+        $textKembali = str_pad("Kembali", 17);
+        $kembali = str_pad(number_format($kembali), 12, ' ', STR_PAD_LEFT);
+        $text .= "$textKembali$space$kembali\n";
         
         $text .= "--------------------------------\n";
         $text .= centerText('Terima Kasih') . "\n";
