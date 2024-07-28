@@ -9,7 +9,9 @@ use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Filament\Tables\Filters\Filter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
@@ -18,6 +20,10 @@ class OrderResource extends Resource
     protected static ?string $model = Order::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-shopping-cart';
+    protected static ?string $navigationLabel = 'Pesanan';
+    protected static ?string $modelLabel = 'Pesanan';
+
+
 
     public static function form(Form $form): Form
     {
@@ -55,44 +61,50 @@ class OrderResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('member_id')
-                    ->numeric()
-                    ->sortable(),
+                Tables\Columns\TextColumn::make('member.name')
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('invoice_number')
+                    ->label('No. Invoice')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('discount_type')
+                    ->label('Diskon')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('discount_price')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('grand_total')
+                    ->label('Total Diskon')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('payment_method')
+                    ->label('Pembayaran')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('done_at')
-                    ->dateTime()
-                    ->sortable(),
                 Tables\Columns\TextColumn::make('paid_amount')
+                    ->label('Total Bayar')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('return_amount')
+                    ->label('Kembalian')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('created_at')
+                Tables\Columns\TextColumn::make('grand_total')
+                    ->label('Harga Total')
+                    ->numeric()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('done_at')
+                    ->label('Tanggal')
                     ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->sortable(),
             ])
             ->filters([
-                //
+                SelectFilter::make('payment_method')
+                    ->options([
+                        'Qris' => 'Qris',
+                        'Cash' => 'Cash',
+                    ])
+                    ->label('Metode Pembayaran')
+                    ->native(false),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make()
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

@@ -18,6 +18,8 @@ class UserResource extends Resource
     protected static ?string $model = User::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-user';
+    protected static ?string $navigationLabel = 'Pengguna';
+    protected static ?string $modelLabel = 'Pengguna';
 
     public static function form(Form $form): Form
     {
@@ -54,6 +56,11 @@ class UserResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('role')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'Admin' => 'success',
+                        'Kasir' => 'warning',
+                    })
                     ->searchable(),
             ])
             ->filters([

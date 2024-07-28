@@ -6,6 +6,7 @@ use App\Filament\Resources\MemberResource\Pages;
 use App\Filament\Resources\MemberResource\RelationManagers;
 use App\Models\Member;
 use Filament\Forms;
+use Filament\Forms\Components\Section;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -22,18 +23,24 @@ class MemberResource extends Resource
     public static function form(Form $form): Form
     {
         return $form
-            ->schema([
+        ->schema([
+            Section::make()->schema([
                 Forms\Components\TextInput::make('name')
+                    ->label('Nama')
                     ->maxLength(255)
                     ->default(null),
                 Forms\Components\TextInput::make('email')
+                    ->label('Email')
                     ->email()
                     ->maxLength(255)
                     ->default(null),
                 Forms\Components\TextInput::make('phone')
+                    ->label('Telepon')
                     ->tel()
+                     ->prefix('+62')
                     ->required()
                     ->numeric(),
+                ])->columns(2),
             ]);
     }
 
@@ -48,10 +55,11 @@ class MemberResource extends Resource
                 Tables\Columns\TextColumn::make('phone')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
+                    ->label('Tanggal dibuat')
                     ->dateTime()
-                    ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
+                    Tables\Columns\TextColumn::make('updated_at')
+                    ->label('terakhir diupdate')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -61,6 +69,7 @@ class MemberResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

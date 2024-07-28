@@ -6,6 +6,7 @@ use App\Filament\Resources\UserResource;
 use Filament\Forms;
 use Filament\Actions;
 use App\Models\User;
+use Filament\Forms\Components\Section;
 use Filament\Forms\Form;
 use Filament\Resources\Pages\EditRecord;
 
@@ -17,7 +18,8 @@ class EditUser extends EditRecord
     {
         return $form
         ->schema([
-            Forms\Components\TextInput::make('name')
+            Section::make()->schema([
+                Forms\Components\TextInput::make('name')
                     ->required()
                     ->maxLength(255),
                 Forms\Components\TextInput::make('email')
@@ -30,6 +32,7 @@ class EditUser extends EditRecord
                     ->options(User::ROLES)
                     ->native(false)
                     ->required()
+            ])->columns(2),
         ]);
     }
 }
