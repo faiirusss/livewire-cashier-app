@@ -3,6 +3,7 @@
 namespace App\Livewire\Cart;
 
 use App\Models\Order;
+use App\Models\Product;
 use Livewire\Component;
 use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
 use Mike42\Escpos\Printer;
@@ -34,12 +35,12 @@ class Payment extends Component
             $this->total_price += $itemProduct->unit_price * $itemProduct->quantity;
         }
         $this->ppn = ceil($this->total_price * 0.05);
-        
+
         return view('livewire.cart.payment', [
             'order' => $this->order,
             // 'orderProduct' => $orderProduct
         ]);
-    }    
+    }
 
     public function payment_cash()
     {
@@ -57,28 +58,35 @@ class Payment extends Component
         $this->return_amount = $this->paid_amount - $this->order->grand_total;
 
         if($this->paid_amount > $this->order->grand_total) {
-            
+
+            foreach ($this->order->orderProducts as $itemProduct) {
+                $product = Product::find($itemProduct->product_id);
+                if ($product) {
+                    $product->decrement('stock', $itemProduct->quantity);
+                }
+            }
+
             $this->order->update([
                 'paid_amount' => $this->paid_amount,
                 'return_amount' => $this->return_amount,
                 'payment_method' => 'Cash',
             ]);
-            $this->isModalOpen = true; 
-            
+            $this->isModalOpen = true;
+
         } else {
             $this->isModalOpen = true;
             $this->reset('paid_amount');
             session()->flash('error_payment', 'Uang yang dibayar kurang!');
         }
-        
+
     }
 
     public function pay_cash()
-    {       
+    {
         $this->order = Order::where('done_at', null)
         ->with('orderProducts')
         ->latest()
-        ->first();       
+        ->first();
 
         $this->order->update([
             'done_at' => now()
@@ -94,8 +102,8 @@ class Payment extends Component
         $pembayaran = $this->order->payment_method;
         $bayar = $this->order->paid_amount;
         $kembali = $this->order->return_amount;
-        
-        
+
+
         function centerTextCash($text, $width = 32) {
             if (strlen($text) >= $width) {
                 return $text;
@@ -124,7 +132,7 @@ class Payment extends Component
 
         foreach ($this->order->orderProducts as $product) {
             $productName = $product->product->product_name;
-            $quantity = $product->quantity; 
+            $quantity = $product->quantity;
             $totalPrice = number_format($product->unit_price * $quantity);
             $this->total_qty += $quantity;
             $this->total_price += $product->unit_price * $product->quantity;
@@ -134,19 +142,19 @@ class Payment extends Component
             $paddedQty = str_pad($quantity, $qtyWidth, ' ', STR_PAD_LEFT);
             $paddedPrice = str_pad($totalPrice, $priceWidth, ' ', STR_PAD_LEFT);
 
-            $text .= "$paddedName$paddedQty$paddedPrice\n";                  
-        }            
+            $text .= "$paddedName$paddedQty$paddedPrice\n";
+        }
         $textTotalBarang = str_pad("Total Barang", $nameWidth);
         $totalBarang = str_pad($this->total_qty, $qtyWidth, ' ', STR_PAD_LEFT);
 
         // $text .= "$textTotalBarang$totalBarang\n";
 
         $text .= "--------------------------------\n";
-        
+
         $space = str_pad("", 3, ' ', STR_PAD_LEFT);
         $spaceTotal = str_pad("", 2, ' ', STR_PAD_LEFT);
         $textSubtotal = str_pad("Subtotal " . $this->total_qty . " Produk", 18);
-        $subtotal = str_pad(number_format($this->total_price), 12, ' ', STR_PAD_LEFT); 
+        $subtotal = str_pad(number_format($this->total_price), 12, ' ', STR_PAD_LEFT);
         $text .= "$textSubtotal$spaceTotal$subtotal\n";
 
         $textDiskon = str_pad("Diskon", 17);
@@ -157,9 +165,9 @@ class Payment extends Component
         $textPpn = str_pad("PPN", 17);
         $ppn = str_pad(number_format($this->ppn), 12, ' ', STR_PAD_LEFT);
         $text .= "$textPpn$space$ppn\n";
-        
+
         $text .= "--------------------------------\n";
-        
+
         $textTotal = str_pad("Total", 17);
         $total = str_pad(number_format($this->order->grand_total), 12, ' ', STR_PAD_LEFT);
         $text .= "$textTotal$space$total\n";
@@ -175,10 +183,10 @@ class Payment extends Component
         $textKembali = str_pad("Kembali", 17);
         $kembali = str_pad(number_format($kembali), 12, ' ', STR_PAD_LEFT);
         $text .= "$textKembali$space$kembali\n";
-        
+
         $text .= "--------------------------------\n";
         $text .= centerTextCash('Terima Kasih') . "\n";
-        
+
         try {
             $connector = new WindowsPrintConnector("RP58-Printer");
             $printer = new Printer($connector);
@@ -193,21 +201,28 @@ class Payment extends Component
     }
 
     public function pay_qris()
-    {        
+    {
 
         $this->order = Order::where('done_at', null)
         ->with('orderProducts')
         ->latest()
         ->first();
 
-        $paid_amount = $this->order->grand_total;        
+        $paid_amount = $this->order->grand_total;
 
         $this->order->update([
             'paid_amount' => $paid_amount,
-            'payment_method' => 'Qris',            
+            'payment_method' => 'Qris',
             'done_at' => now(),
             'return_amount' => 0
-        ]);             
+        ]);
+
+        foreach ($this->order->orderProducts as $itemProduct) {
+            $product = Product::find($itemProduct->product_id);
+            if ($product) {
+                $product->decrement('stock', $itemProduct->quantity);
+            }
+        }
 
         $orderId = strtoupper($this->order->invoice_number);
         $cashier = auth()->user()->name; // Assuming the cashier is the authenticated user
@@ -219,8 +234,8 @@ class Payment extends Component
         $pembayaran = 'Qris';
         $bayar = $this->order->paid_amount;
         $kembali = 0;
-        
-        
+
+
         function centerText($text, $width = 32) {
             if (strlen($text) >= $width) {
                 return $text; // If the text is longer than or equal to the width, return it as is.
@@ -249,7 +264,7 @@ class Payment extends Component
 
         foreach ($this->order->orderProducts as $product) {
             $productName = $product->product->product_name;
-            $quantity = $product->quantity; 
+            $quantity = $product->quantity;
             $totalPrice = number_format($product->unit_price * $quantity);
             $this->total_qty += $quantity;
             $this->total_price += $product->unit_price * $product->quantity;
@@ -259,21 +274,21 @@ class Payment extends Component
             $paddedQty = str_pad($quantity, $qtyWidth, ' ', STR_PAD_LEFT);
             $paddedPrice = str_pad($totalPrice, $priceWidth, ' ', STR_PAD_LEFT);
 
-            $text .= "$paddedName$paddedQty$paddedPrice\n";                  
-        }   
+            $text .= "$paddedName$paddedQty$paddedPrice\n";
+        }
         // $textTotalBarang = str_pad("Total Barang", $nameWidth);
         // $totalBarang = str_pad($this->total_qty, $qtyWidth, ' ', STR_PAD_LEFT);
 
         // $text .= "$textTotalBarang$totalBarang\n";
         $text .= "--------------------------------\n";
-        
+
         $space = str_pad("", 3, ' ', STR_PAD_LEFT);
         $spaceTotal = str_pad("", 2, ' ', STR_PAD_LEFT);
 
         $textSubtotal = str_pad("Subtotal " . $this->total_qty . " Produk", 18);
-        $subtotal = str_pad(number_format($this->total_price), 12, ' ', STR_PAD_LEFT); 
+        $subtotal = str_pad(number_format($this->total_price), 12, ' ', STR_PAD_LEFT);
         $text .= "$textSubtotal$spaceTotal$subtotal\n";
-        
+
         $textDiskon = str_pad("Diskon", 17);
         $diskon = str_pad($diskon, 12, ' ', STR_PAD_LEFT);
         $text .= "$textDiskon$space$diskon\n";
@@ -282,9 +297,9 @@ class Payment extends Component
         $textPpn = str_pad("PPN", 17);
         $ppn = str_pad(number_format($this->ppn), 12, ' ', STR_PAD_LEFT);
         $text .= "$textPpn$space$ppn\n";
-        
+
         $text .= "--------------------------------\n";
-        
+
         $textTotal = str_pad("Total", 17);
         $total = str_pad(number_format($this->order->grand_total), 12, ' ', STR_PAD_LEFT);
         $text .= "$textTotal$space$total\n";
@@ -300,10 +315,10 @@ class Payment extends Component
         $textKembali = str_pad("Kembali", 17);
         $kembali = str_pad(number_format($kembali), 12, ' ', STR_PAD_LEFT);
         $text .= "$textKembali$space$kembali\n";
-        
+
         $text .= "--------------------------------\n";
         $text .= centerText('Terima Kasih') . "\n";
-        
+
         try {
             $connector = new WindowsPrintConnector("RP58-Printer");
             $printer = new Printer($connector);
@@ -315,5 +330,5 @@ class Payment extends Component
         }
         return redirect()->route('order');
     }
-    
+
 }
