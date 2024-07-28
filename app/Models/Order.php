@@ -18,7 +18,7 @@ class Order extends Model
         'grand_total',
         'paid_amount',
         'return_amount',
-        'done_at',  
+        'done_at',
     ];
 
     public function orderProducts()
@@ -39,9 +39,9 @@ class Order extends Model
         foreach ($orderProducts as $orderProduct) {
             $totalPrice += $orderProduct->unit_price * $orderProduct->quantity;
         }
-        
+
         return $totalPrice;
-    }  
+    }
 
     public function getTotalQtyAttribute()
     {
@@ -51,17 +51,12 @@ class Order extends Model
         foreach ($orderProducts as $orderProduct) {
             $totalQty += $orderProduct->quantity;
         }
-        
-        return $totalQty;
-    }   
 
-    
+        return $totalQty;
+    }
 
     public function getTotalPriceFormattedAttribute()
     {
         return 'Rp' . number_format($this->totalPrice, 0, ',', '.');
     }
-    
-    
-
 }
