@@ -37,10 +37,9 @@ class Order extends Component
 
         $this->total_price = $this->order->total_price ?? 0;
         $this->total_qty = $this->order->total_qty ?? 0;
-        $this->ppn = ceil($this->total_price * 0.05);
+        $this->ppn = ceil($this->total_price * 0.11);
 
         $this->discount_price = $this->discount();
-
 
         if($this->discount_code != '')
         {
@@ -66,7 +65,7 @@ class Order extends Component
     {
 
         // mencari product dengan id
-        $product = Product::where('id', $this->search)
+        $product = Product::where('sku', $this->search)
         ->orWhere('product_name', 'like', '%' . $this->search . '%')
         ->first();
 
@@ -266,12 +265,16 @@ class Order extends Component
 
     public function discount()
     {
+        // input user
         $discount_code = $this->discount_code;
 
-        if($discount_code == 'FAIRUS123')
+        $promo = \App\Models\Promo::where('promo_code', $discount_code)->first();
+
+        if($promo)
         {
-            $this->discount_total = '10%';
-            $this->discount_price = $this->order->total_price * 0.1;
+            $this->discount_total = $promo->discount * 100;
+            $discount_total_decimal = $promo->discount;
+            $this->discount_price = $this->order->total_price * $discount_total_decimal;
             session()->flash('promo_message', 'Digunakan');
         } else {
             $this->discount_price = 0;
@@ -281,6 +284,7 @@ class Order extends Component
             session()->flash('promo_message', 'Kode Diskon Tidak Valid');
         }
         return $this->discount_price;
+
     }
 
     function generateUniqueCode($length = 6) {

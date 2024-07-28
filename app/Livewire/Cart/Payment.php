@@ -34,7 +34,7 @@ class Payment extends Component
             $this->total_qty += $itemProduct->quantity;
             $this->total_price += $itemProduct->unit_price * $itemProduct->quantity;
         }
-        $this->ppn = ceil($this->total_price * 0.05);
+        $this->ppn = ceil($this->total_price * 0.11);
 
         return view('livewire.cart.payment', [
             'order' => $this->order,

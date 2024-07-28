@@ -75,6 +75,11 @@ class OrderResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('payment_method')
                     ->label('Pembayaran')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'Qris' => 'success',
+                        'Cash' => 'warning',
+                    })
                     ->searchable(),
                 Tables\Columns\TextColumn::make('paid_amount')
                     ->label('Total Bayar')
