@@ -11,7 +11,7 @@ use Livewire\WithoutUrlPagination;
 
 class Sidebar extends Component
 {
-    use WithPagination, WithoutUrlPagination; 
+    use WithPagination, WithoutUrlPagination;
 
     public function render()
     {

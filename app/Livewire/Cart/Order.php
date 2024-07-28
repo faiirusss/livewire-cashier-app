@@ -15,7 +15,7 @@ class Order extends Component
     public $order;
     public $total_price;
     public $total_qty;
-    public $ppn; 
+    public $ppn;
     public $grand_total;
 
     public $discount_code = '';
@@ -30,11 +30,11 @@ class Order extends Component
 
     public function render()
     {
-        $this->order = \App\Models\Order::where('done_at', null) 
+        $this->order = \App\Models\Order::where('done_at', null)
                 ->with('orderProducts')
                 ->latest()
                 ->first();
-                
+
         $this->total_price = $this->order->total_price ?? 0;
         $this->total_qty = $this->order->total_qty ?? 0;
         $this->ppn = ceil($this->total_price * 0.05);
@@ -47,7 +47,7 @@ class Order extends Component
             $this->grand_total = $this->total_price + $this->ppn - $this->discount_price;
         } else {
             $this->grand_total = $this->total_price + $this->ppn;
-        }       
+        }
 
         $results = [];
         if(strlen($this->phone_member) > 0) {
@@ -60,23 +60,23 @@ class Order extends Component
             'members' => Member::all(),
             'results' => $results,
         ]);
-    }          
+    }
 
     public function createOrder($isAdded = true)
-    { 
+    {
 
-        // mencari product dengan id 
+        // mencari product dengan id
         $product = Product::where('id', $this->search)
         ->orWhere('product_name', 'like', '%' . $this->search . '%')
         ->first();
-        
+
         if($product)
         {
             if($product->stock >= 1)
             {
                 $this->order = \App\Models\Order::where('done_at', null)
                     ->latest()
-                    ->first();        
+                    ->first();
 
                 if($this->order == null)
                 {
@@ -84,7 +84,7 @@ class Order extends Component
                         'invoice_number' => $this->generateUniqueCode(),
                     ]);
                 }
-                // mencari product di order product 
+                // mencari product di order product
                 $orderProduct = OrderProduct::where('order_id', $this->order->id)
                     ->where('product_id', $this->search)
                     ->first();
@@ -110,7 +110,7 @@ class Order extends Component
                             'product_id' => $product->id,
                             'unit_price' => $product->selling_price,
                             'quantity' => 1
-                        ]);                        
+                        ]);
 
                         $orderProductCount = $this->order->orderProducts->count();
                         if($orderProductCount == 1)
@@ -119,7 +119,7 @@ class Order extends Component
                         }
                     }
                 }
-            }            
+            }
             else {
                 session()->flash('product_error', 'Stok Barang Habis!');
                 // dd('stok abis');
@@ -127,15 +127,15 @@ class Order extends Component
 
         } else {
             session()->flash('product_error', 'Produk Tidak Tersedia!');
-        }    
+        }
         $this->reset('search');
     }
 
     public function updateCart($isAdded = true, $id)
-    {   
-        try {            
+    {
+        try {
             if($this->order)
-            { 
+            {
                 $product = Product::findOrFail($id);
                 $orderProduct = OrderProduct::where('order_id', $this->order->id)
                     ->where('product_id', $id)
@@ -145,13 +145,18 @@ class Order extends Component
                 {
                     if($isAdded)
                     {
-                        $orderProduct->increment('quantity', 1);
+                        if(($orderProduct->quantity + 1) > $product->stock)
+                        {
+                            session()->flash('product_error', 'Stock Tidak Cukup!');
+                        } else {
+                            $orderProduct->increment('quantity', 1);
+                        }
                     }
                     else
                     {
                         $orderProduct->decrement('quantity', 1);
                         if ($orderProduct->quantity < 1) {
-                            $orderProduct->delete();
+                            $this->removeCart($id);
                         }
                     }
                     $orderProduct->save();
@@ -167,7 +172,7 @@ class Order extends Component
                     }
                 }
                 $this->total_price = $this->order->total_price ?? 0;
-            } 
+            }
         } catch(ValidationException $e) {
             dd($e);
         } catch(\Exception $e) {
@@ -181,26 +186,26 @@ class Order extends Component
                     ->where('product_id', $id)
                     ->first();
 
-        if ($orderProduct) {        
+        if ($orderProduct) {
             $order = \App\Models\Order::where('done_at', null)
                 ->with('orderProducts')
                 ->latest()
                 ->first();
 
-            if ($order) {                
+            if ($order) {
                 $orderProductCount = $order->orderProducts->count();
 
-                if ($orderProductCount > 1) {                  
+                if ($orderProductCount > 1) {
                     $orderProduct->delete();
-                } else {                        
+                } else {
                     $orderProduct->delete();
                     $order->delete();
                     $this->redirect('/order');
                 }
             }
         }
-    }  
-    
+    }
+
     public function confirmOrder()
     {
         $discount_total = $this->discount_total ?? 0;
@@ -208,24 +213,24 @@ class Order extends Component
         $grand_total = $this->grand_total;
 
         $order = \App\Models\Order::where('done_at', null)->latest()
-        ->first(); 
+        ->first();
 
         if($order->member_id == null){
             session()->flash('order_error', 'Member harus diisi!');
             return;
         }
-        
+
         $order->update([
             'discount_type' => $discount_total,
             'discount_price' => $discount_price,
             'grand_total' => $grand_total,
         ]);
 
-        $this->redirect('/payment');                
+        $this->redirect('/payment');
     }
 
     public function member()
-    {        
+    {
 
         if($this->phone_member != null){
             $member = Member::where('phone', $this->phone_member)->first();
@@ -240,7 +245,7 @@ class Order extends Component
                         'member_id' => $member->id
                     ]);
                     session()->flash('member_message', 'Member berhasil digunakan');
-                }         
+                }
             } else {
                 $member = Member::firstOrCreate([
                     'phone' => $this->phone_member,
@@ -257,13 +262,13 @@ class Order extends Component
         } else {
             session()->flash('member_message', 'Member harus diisi');
         }
-    }  
+    }
 
     public function discount()
     {
         $discount_code = $this->discount_code;
 
-        if($discount_code == 'FAIRUS123') 
+        if($discount_code == 'FAIRUS123')
         {
             $this->discount_total = '10%';
             $this->discount_price = $this->order->total_price * 0.1;

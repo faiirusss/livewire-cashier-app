@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\PrintController;
 use Illuminate\Support\Facades\Route;
+use Livewire\Volt\Volt;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,12 +15,15 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::view('/', 'welcome');
+Route::middleware('guest')->group(function () {
+    Volt::route('/', 'pages.auth.login')
+        ->name('login');
+});
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/order', App\Livewire\Cart\Order::class)->name('order');
-    Route::get('/payment', App\Livewire\Cart\Payment::class)->name('payment'); 
-    Route::get('/print', [PrintController::class, 'print'])->name('print');     
+    Route::get('/payment', App\Livewire\Cart\Payment::class)->name('payment');
+    Route::get('/print', [PrintController::class, 'print'])->name('print');
 });
 
 Route::view('dashboard', 'dashboard')
