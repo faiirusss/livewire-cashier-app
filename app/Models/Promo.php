@@ -12,7 +12,8 @@ class Promo extends Model
     protected $fillable = [
         'title',
         'promo_code',
-        'discount',
+        'discount_type',
+        'discount_value',
         'expired_at',
     ];
 }

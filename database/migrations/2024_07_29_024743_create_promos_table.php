@@ -15,7 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->string('promo_code');
-            $table->float('discount');
+            $table->string('discount_type');
+            $table->float('discount_value');
             $table->date('expired_at');
             $table->timestamps();
         });

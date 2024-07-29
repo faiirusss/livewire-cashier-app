@@ -270,7 +270,7 @@
                     @endif
                     <div class="flex justify-between">
                         <span class="text-sm font-normal text-gray-600">PPN 11%</span>
-                        <span class="text-sm font-normal text-gray-800">Rp{{ number_format(ceil($total_price * 0.05), 0,
+                        <span class="text-sm font-normal text-gray-800">Rp{{ number_format(ceil($total_price * 0.11), 0,
                             ',', '.') }}</span>
                     </div>
                     <div class="flex justify-between">

@@ -6,8 +6,12 @@ use App\Filament\Resources\PromoResource\Pages;
 use App\Filament\Resources\PromoResource\RelationManagers;
 use App\Models\Promo;
 use Filament\Forms;
+use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
+use Filament\Forms\Get;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -26,7 +30,6 @@ class PromoResource extends Resource
     {
         return $form
             ->schema([
-                Section::make()->schema([
                 Forms\Components\TextInput::make('title')
                     ->label('Judul Promo')
                     ->required()
@@ -35,16 +38,40 @@ class PromoResource extends Resource
                     ->label('Kode Promo')
                     ->required()
                     ->maxLength(255),
-                    Forms\Components\TextInput::make('discount')
-                    ->label('Besar Diskon')
-                    ->label('Besar Diskon')
-                    ->required()
-                    ->numeric(),
-                    Forms\Components\DatePicker::make('expired_at')
+                Select::make('discount_type')
+                ->label('Tipe Diskon')
+                ->options([
+                    'Rupiah' => 'Rupiah',
+                    'Percent' => 'Percent',
+                ])
+                ->native(false)
+                ->live()
+                ->afterStateUpdated(fn (Select $component) => $component
+                    ->getContainer()
+                    ->getComponent('dynamicDiscountFields')
+                    ->getChildComponentContainer()
+                    ->fill()
+                ),
+                Forms\Components\DatePicker::make('expired_at')
                     ->label('Masa Berlaku')
                     ->required(),
-                ])->columns(2),
-
+            Grid::make(2)
+                ->schema(fn (Get $get): array => match ($get('discount_type')) {
+                    'Rupiah' => [
+                        TextInput::make('discount_value')
+                            ->numeric()
+                            ->label('Total Diskon (Rupiah)')
+                            ->required(),
+                    ],
+                    'Percent' => [
+                        TextInput::make('discount_value')
+                            ->numeric()
+                            ->label('Diskon Persen')
+                            ->suffix('%')
+                            ->required(),
+                    ],
+                    default => [],
+                })->key('dynamicDiscountFields'),
             ]);
     }
 
@@ -58,7 +85,10 @@ class PromoResource extends Resource
                     Tables\Columns\TextColumn::make('promo_code')
                     ->label('Kode Promo')
                     ->searchable(),
-                    Tables\Columns\TextColumn::make('discount')
+                    Tables\Columns\TextColumn::make('discount_type')
+                    ->label('Tipe Diskon')
+                    ->sortable(),
+                    Tables\Columns\TextColumn::make('discount_value')
                     ->label('Besar Diskon')
                     ->numeric()
                     ->sortable(),
