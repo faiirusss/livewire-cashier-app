@@ -5,6 +5,7 @@ namespace App\Livewire\Cart;
 use App\Models\Member;
 use App\Models\OrderProduct;
 use App\Models\Product;
+use Carbon\Carbon;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -270,12 +271,24 @@ class Order extends Component
 
         $promo = \App\Models\Promo::where('promo_code', $discount_code)->first();
 
-        if($promo)
+        if($promo && ($promo->expired_at >= Carbon::now()))
         {
-            $this->discount_total = $promo->discount * 100;
-            $discount_total_decimal = $promo->discount;
-            $this->discount_price = $this->order->total_price * $discount_total_decimal;
-            session()->flash('promo_message', 'Digunakan');
+            $promo_type = $promo->discount_type;
+
+            if($promo_type == 'Persen')
+            {
+                $this->discount_total = $promo->discount_value; // get value discount (10%)
+                $discount_total_decimal = $promo->discount_value / 100; // convert to decimal (0.1)
+                $this->discount_price = $this->order->total_price * $discount_total_decimal; // get total discount (rupiah) - total price * 0.1
+
+                session()->flash('promo_message', 'Digunakan');
+            } else if($promo_type == 'Rupiah')
+            {
+                $this->discount_total = 0; // get value discount (10%)
+                $this->discount_price = $promo->discount_value;
+                session()->flash('promo_message', 'Digunakan');
+            }
+
         } else {
             $this->discount_price = 0;
             $this->discount_total = 0;

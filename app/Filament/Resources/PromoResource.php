@@ -42,7 +42,7 @@ class PromoResource extends Resource
                 ->label('Tipe Diskon')
                 ->options([
                     'Rupiah' => 'Rupiah',
-                    'Percent' => 'Percent',
+                    'Persen' => 'Persen',
                 ])
                 ->native(false)
                 ->live()
@@ -63,7 +63,7 @@ class PromoResource extends Resource
                             ->label('Total Diskon (Rupiah)')
                             ->required(),
                     ],
-                    'Percent' => [
+                    'Persen' => [
                         TextInput::make('discount_value')
                             ->numeric()
                             ->label('Diskon Persen')

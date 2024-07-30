@@ -5,6 +5,7 @@ namespace App\Livewire\Cart;
 use App\Models\Order;
 use App\Models\Product;
 use Livewire\Component;
+use Mike42\Escpos\EscposImage;
 use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
 use Mike42\Escpos\Printer;
 
@@ -113,7 +114,7 @@ class Payment extends Component
             }
 
         // Format the receipt text
-        $text = centerTextCash('Merajut Asa') . "\n";
+        $text = centerTextCash('Merajut Asa Kita') . "\n";
         $text .= centerTextCash($address) . "\n";
         $text .= centerTextCash($address2) . "\n";
         $text .= centerTextCash($phone) . "\n\n";
@@ -190,6 +191,10 @@ class Payment extends Component
         try {
             $connector = new WindowsPrintConnector("RP58-Printer");
             $printer = new Printer($connector);
+
+            $img = EscposImage::load(public_path('images/logo.png'), false);
+
+            $printer->graphics($img);
             $printer->text($text);
             $printer->cut();
             $printer->close();
@@ -245,7 +250,7 @@ class Payment extends Component
             }
 
         // Format the receipt text
-        $text = centerText('Merajut Asa') . "\n";
+        $text = centerText('Merajut Asa Kita') . "\n";
         $text .= centerText($address) . "\n";
         $text .= centerText($address2) . "\n";
         $text .= centerText($phone) . "\n\n";
@@ -320,8 +325,9 @@ class Payment extends Component
         $text .= centerText('Terima Kasih') . "\n";
 
         try {
-            $connector = new WindowsPrintConnector("RP58-Printer");
+            $connector = new WindowsPrintConnector("RP58");
             $printer = new Printer($connector);
+
             $printer->text($text);
             $printer->cut();
             $printer->close();
