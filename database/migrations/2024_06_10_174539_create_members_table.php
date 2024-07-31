@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('name')->nullable();
             $table->string('email')->unique()->nullable();
             $table->bigInteger('phone')->unique();
-            $table->int('point')->default(0);
+            $table->integer('point')->default(0);
             $table->timestamps();
         });
     }

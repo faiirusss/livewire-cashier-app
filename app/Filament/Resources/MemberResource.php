@@ -54,6 +54,8 @@ class MemberResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('phone')
                     ->sortable(),
+                Tables\Columns\TextColumn::make('point')
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Tanggal dibuat')
                     ->dateTime()

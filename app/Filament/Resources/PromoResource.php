@@ -30,48 +30,50 @@ class PromoResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('title')
-                    ->label('Judul Promo')
-                    ->required()
-                    ->maxLength(255),
-                    Forms\Components\TextInput::make('promo_code')
-                    ->label('Kode Promo')
-                    ->required()
-                    ->maxLength(255),
-                Select::make('discount_type')
-                ->label('Tipe Diskon')
-                ->options([
-                    'Rupiah' => 'Rupiah',
-                    'Persen' => 'Persen',
-                ])
-                ->native(false)
-                ->live()
-                ->afterStateUpdated(fn (Select $component) => $component
-                    ->getContainer()
-                    ->getComponent('dynamicDiscountFields')
-                    ->getChildComponentContainer()
-                    ->fill()
-                ),
-                Forms\Components\DatePicker::make('expired_at')
-                    ->label('Masa Berlaku')
-                    ->required(),
-            Grid::make(2)
-                ->schema(fn (Get $get): array => match ($get('discount_type')) {
-                    'Rupiah' => [
-                        TextInput::make('discount_value')
-                            ->numeric()
-                            ->label('Total Diskon (Rupiah)')
-                            ->required(),
-                    ],
-                    'Persen' => [
-                        TextInput::make('discount_value')
-                            ->numeric()
-                            ->label('Diskon Persen')
-                            ->suffix('%')
-                            ->required(),
-                    ],
-                    default => [],
-                })->key('dynamicDiscountFields'),
+                Section::make()->schema([
+                    Forms\Components\TextInput::make('title')
+                        ->label('Judul Promo')
+                        ->required()
+                        ->maxLength(255),
+                        Forms\Components\TextInput::make('promo_code')
+                        ->label('Kode Promo')
+                        ->required()
+                        ->maxLength(255),
+                    Select::make('discount_type')
+                    ->label('Tipe Diskon')
+                    ->options([
+                        'Rupiah' => 'Rupiah',
+                        'Persen' => 'Persen',
+                    ])
+                    ->native(false)
+                    ->live()
+                    ->afterStateUpdated(fn (Select $component) => $component
+                        ->getContainer()
+                        ->getComponent('dynamicDiscountFields')
+                        ->getChildComponentContainer()
+                        ->fill()
+                    ),
+                    Forms\Components\DatePicker::make('expired_at')
+                        ->label('Masa Berlaku')
+                        ->required(),
+                Grid::make(2)
+                    ->schema(fn (Get $get): array => match ($get('discount_type')) {
+                        'Rupiah' => [
+                            TextInput::make('discount_value')
+                                ->numeric()
+                                ->label('Total Diskon (Rupiah)')
+                                ->required(),
+                        ],
+                        'Persen' => [
+                            TextInput::make('discount_value')
+                                ->numeric()
+                                ->label('Diskon Persen')
+                                ->suffix('%')
+                                ->required(),
+                        ],
+                        default => [],
+                    })->key('dynamicDiscountFields'),
+                ])->columns(2),
             ]);
     }
 

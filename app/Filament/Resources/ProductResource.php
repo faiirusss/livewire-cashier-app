@@ -6,6 +6,7 @@ use App\Filament\Resources\ProductResource\Pages;
 use App\Filament\Resources\ProductResource\RelationManagers;
 use App\Models\Product;
 use Filament\Forms;
+use Filament\Forms\Components\Section;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -25,29 +26,31 @@ class ProductResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('product_name')
-                    ->label('Nama Produk')
-                    ->required()
-                    ->maxLength(255),
-                    Forms\Components\TextInput::make('selling_price')
-                    ->label('Harga')
-                    ->required()
-                    ->numeric(),
-                    Forms\Components\TextInput::make('sku')
-                    ->label('SKU')
-                    ->required()
-                    ->maxLength(255),
-                    Forms\Components\TextInput::make('stock')
-                    ->label('Stok')
-                    ->required()
-                    ->numeric(),
-                    Forms\Components\TextInput::make('color')
-                    ->label('Warna')
-                    ->required()
-                    ->maxLength(255),
-                    Forms\Components\FileUpload::make('image')
-                    ->label('Gambar Produk')
-                    ->image(),
+            Section::make()->schema([
+                    Forms\Components\TextInput::make('product_name')
+                        ->label('Nama Produk')
+                        ->required()
+                        ->maxLength(255),
+                        Forms\Components\TextInput::make('selling_price')
+                        ->label('Harga')
+                        ->required()
+                        ->numeric(),
+                        Forms\Components\TextInput::make('sku')
+                        ->label('SKU')
+                        ->required()
+                        ->maxLength(255),
+                        Forms\Components\TextInput::make('stock')
+                        ->label('Stok')
+                        ->required()
+                        ->numeric(),
+                        Forms\Components\TextInput::make('color')
+                        ->label('Warna')
+                        ->required()
+                        ->maxLength(255),
+                        Forms\Components\FileUpload::make('image')
+                        ->label('Gambar Produk')
+                        ->image(),
+                ])->columns(2),
             ]);
     }
 

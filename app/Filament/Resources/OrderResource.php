@@ -4,8 +4,11 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\OrderResource\Pages;
 use App\Filament\Resources\OrderResource\RelationManagers;
+use App\Models\Member;
 use App\Models\Order;
+use App\Models\Promo;
 use Filament\Forms;
+use Filament\Forms\Components\Section;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -29,31 +32,46 @@ class OrderResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('member_id')
+                Section::make()->schema([
+
+                    Forms\Components\Select::make('member_id')
+                        ->label('Member')
+                        ->options(Member::all()->pluck('name', 'id'))
+                        ->optionsLimit(3)
+                        ->searchable()
+                        ->required()
+                        ->native(false),
+                    Forms\Components\TextInput::make('invoice_number')
+                        ->label('No. Invoice')
+                        ->prefix('#')
+                        ->required()
+                        ->maxLength(255),
+                    Forms\Components\Select::make('discount_type')
+                        ->options(Promo::all()->pluck('discount_type', 'discount_type'))
+                        ->default(null),
+                    Forms\Components\TextInput::make('discount_price')
+                        ->label('Total Diskon')
+                        ->numeric()
+                        ->default(null),
+                        Forms\Components\TextInput::make('grand_total')
+                        ->label('Total Bayar')
+                        ->numeric()
+                        ->default(null),
+                        Forms\Components\TextInput::make('payment_method')
+                        ->label('Metode Bayar')
+                        ->maxLength(255)
+                        ->default(null),
+                        Forms\Components\DateTimePicker::make('done_at')
+                        ->label('Tanggal Bayar'),
+                    Forms\Components\TextInput::make('paid_amount')
+                    ->label('Total Bayar')
                     ->numeric()
                     ->default(null),
-                Forms\Components\TextInput::make('invoice_number')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('discount_type')
-                    ->maxLength(255)
-                    ->default(null),
-                Forms\Components\TextInput::make('discount_price')
-                    ->numeric()
-                    ->default(null),
-                Forms\Components\TextInput::make('grand_total')
-                    ->numeric()
-                    ->default(null),
-                Forms\Components\TextInput::make('payment_method')
-                    ->maxLength(255)
-                    ->default(null),
-                Forms\Components\DateTimePicker::make('done_at'),
-                Forms\Components\TextInput::make('paid_amount')
-                    ->numeric()
-                    ->default(null),
-                Forms\Components\TextInput::make('return_amount')
-                    ->numeric()
-                    ->default(null),
+                    Forms\Components\TextInput::make('return_amount')
+                        ->label('Kembalian')
+                        ->numeric()
+                        ->default(null),
+                ])->columns(2),
             ]);
     }
 

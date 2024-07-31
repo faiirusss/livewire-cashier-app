@@ -189,12 +189,9 @@ class Payment extends Component
         $text .= centerTextCash('Terima Kasih') . "\n";
 
         try {
-            $connector = new WindowsPrintConnector("RP58-Printer");
+            $connector = new WindowsPrintConnector("RP58");
             $printer = new Printer($connector);
 
-            $img = EscposImage::load(public_path('images/logo.png'), false);
-
-            $printer->graphics($img);
             $printer->text($text);
             $printer->cut();
             $printer->close();
@@ -324,15 +321,23 @@ class Payment extends Component
         $text .= "--------------------------------\n";
         $text .= centerText('Terima Kasih') . "\n";
 
-        try {
-            $connector = new WindowsPrintConnector("RP58");
-            $printer = new Printer($connector);
+        $printerNames = ["RPP02N", "RP58"];
+        $connected = false;
 
-            $printer->text($text);
-            $printer->cut();
-            $printer->close();
-        } catch (\Exception $e) {
-            error_log($e->getMessage());
+        foreach ($printerNames as $printerName) {
+            try {
+                $connector = new WindowsPrintConnector($printerName);
+                $printer = new Printer($connector);
+
+                $printer->text($text);
+                $printer->cut();
+                $printer->close();
+
+                $connected = true;
+                break;
+            } catch (\Exception $e) {
+                error_log($e->getMessage());
+            }
         }
         return redirect()->route('order');
     }
