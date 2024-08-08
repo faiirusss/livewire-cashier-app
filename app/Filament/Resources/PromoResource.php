@@ -35,12 +35,17 @@ class PromoResource extends Resource
                         ->label('Judul Promo')
                         ->required()
                         ->maxLength(255),
-                        Forms\Components\TextInput::make('promo_code')
+                    Forms\Components\TextInput::make('promo_code')
                         ->label('Kode Promo')
                         ->required()
                         ->maxLength(255),
+                    Forms\Components\DatePicker::make('expired_at')
+                        ->label('Masa Berlaku')
+                        ->required(),
+
                     Select::make('discount_type')
                     ->label('Tipe Diskon')
+                    ->prefixIcon('heroicon-o-currency-dollar')
                     ->options([
                         'Rupiah' => 'Rupiah',
                         'Persen' => 'Persen',
@@ -53,14 +58,11 @@ class PromoResource extends Resource
                         ->getChildComponentContainer()
                         ->fill()
                     ),
-                    Forms\Components\DatePicker::make('expired_at')
-                        ->label('Masa Berlaku')
-                        ->required(),
-                Grid::make(2)
-                    ->schema(fn (Get $get): array => match ($get('discount_type')) {
+                    Grid::make(2)->schema(fn (Get $get): array => match ($get('discount_type')) {
                         'Rupiah' => [
                             TextInput::make('discount_value')
                                 ->numeric()
+                                ->prefix('Rp')
                                 ->label('Total Diskon (Rupiah)')
                                 ->required(),
                         ],
@@ -73,6 +75,8 @@ class PromoResource extends Resource
                         ],
                         default => [],
                     })->key('dynamicDiscountFields'),
+
+
                 ])->columns(2),
             ]);
     }

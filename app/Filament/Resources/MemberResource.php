@@ -37,7 +37,8 @@ class MemberResource extends Resource
                 Forms\Components\TextInput::make('phone')
                     ->label('Telepon')
                     ->tel()
-                     ->prefix('+62')
+                    ->prefix('+62')
+                    ->unique()
                     ->required()
                     ->numeric(),
                 ])->columns(2),
