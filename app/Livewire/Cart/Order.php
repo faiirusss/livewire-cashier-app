@@ -69,7 +69,6 @@ class Order extends Component
         $product = Product::where('sku', $this->search)
         ->orWhere('product_name', 'like', '%' . $this->search . '%')
         ->first();
-
         if($product)
         {
             if($product->stock >= 1)
@@ -86,7 +85,7 @@ class Order extends Component
                 }
                 // mencari product di order product
                 $orderProduct = OrderProduct::where('order_id', $this->order->id)
-                    ->where('product_id', $this->search)
+                    ->where('sku_product', $this->search)
                     ->first();
                 if($orderProduct)
                 {
@@ -108,6 +107,7 @@ class Order extends Component
                         OrderProduct::create([
                             'order_id' => $this->order->id,
                             'product_id' => $product->id,
+                            'sku_product' => $product->sku,
                             'unit_price' => $product->selling_price,
                             'quantity' => 1
                         ]);
