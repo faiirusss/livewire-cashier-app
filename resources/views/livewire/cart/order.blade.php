@@ -1,4 +1,4 @@
-<div class="flex flex-row w-full h-screen overflow-hidden">
+<div class="flex flex-row w-full h-screen pb-2 overflow-hidden">
     <div class="w-8/12 border-e">
         <div class="px-2 py-5 mx-auto border-b max-w-screen sm:px-6 lg:px-8">
             <form class="flex" wire:submit="createOrder">
@@ -52,18 +52,17 @@
             </div>
             @endif
 
-            <div class="p-6 mx-8 mb-5 overflow-y-auto border rounded-md max-h-[590px]">
+            <div class="p-2 mx-5 mb-5 overflow-y-auto border rounded-md" style="max-height: calc(80vh - 80px);">
 
                 @if ($order)
-                {{-- @foreach ($order->orderProducts as $item) --}}
 
                 {{-- items --}}
-                <div class="pb-5">
+                <div class="pb-3">
                     @foreach ($order->orderProducts as $item)
                     <div class="flex items-center justify-between p-4 border-b border-gray-200">
-                        <div class="flex-shrink-0 w-24">
+                        <div class="flex-shrink-0 w-10">
                             <img src="{{ asset('storage/' . $item->product->image) }}" class="w-full rounded"
-                                alt="{{ $item->product->nama_produk }}">
+                                alt="{{ $item->product->product_name }}">
                         </div>
                         <div class="flex flex-col w-1/5 ms-5">
                             <span class="block font-bold text-md">{{ $item->product->product_name }}</span>
@@ -89,9 +88,10 @@
                         <div class="w-1/5 text-center">
                             <span>Rp{{ number_format($item->quantity * $item->unit_price, 0, ',', '.') }}</span>
                         </div>
-                        <div class="flex-shrink-0 ms-10">
+
+                        <div class="flex-1 ms-5">
                             <button type="button" wire:click="removeCart('{{ $item->product->id }}')">
-                                <svg class="w-6 h-6 text-red-500 dark:text-white" aria-hidden="true"
+                                <svg class="w-5 h-5 text-red-500 dark:text-white" aria-hidden="true"
                                     xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
                                     viewBox="0 0 24 24">
                                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
@@ -103,9 +103,6 @@
                     </div>
                     @endforeach
                 </div>
-
-
-
                 {{-- end items --}}
                 {{-- @endforeach --}}
                 @else
@@ -121,7 +118,6 @@
                     </div>
                 </div>
                 @endif
-
             </div>
         </div>
 
