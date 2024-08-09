@@ -1,12 +1,5 @@
 <div class="flex flex-row w-full h-screen pb-2 overflow-hidden">
 
-    @if (session()->has('member_message'))
-    @if ($phone_member)
-
-    @endif
-    @endif
-
-
     <div class="w-8/12 border-e">
         <div class="px-2 py-5 mx-auto border-b max-w-screen sm:px-6 lg:px-8">
             <form class="flex" wire:submit="createOrder">
@@ -46,18 +39,14 @@
                 <span class="text-lg font-bold">Keranjang</span>
             </div>
             @if (session()->has('product_error'))
-            <div class="flex items-center p-4 mx-8 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400"
-                role="alert">
-                <svg class="flex-shrink-0 inline w-4 h-4 me-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-                    fill="currentColor" viewBox="0 0 20 20">
-                    <path
-                        d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
-                </svg>
-                <span class="sr-only">Info</span>
-                <div>
-                    {{ session('product_error') }}
-                </div>
-            </div>
+            <x-popup-notification :message="session('product_error')" :timeout="2000"
+                iconPath="m15 9-6 6m0-6 6 6m6-3a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" iconColor="text-red-800"
+                textColor="text-red-800" />
+            @endif
+            @if (session()->has('stock_error'))
+            <x-popup-notification :message="session('stock_error')" :timeout="2000"
+                iconPath="M12 13V8m0 8h.01M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" iconColor="text-red-800"
+                textColor="text-red-800" />
             @endif
 
             <div class="p-2 mx-5 mb-5 overflow-y-auto border rounded-md" style="max-height: calc(80vh - 80px);">
@@ -128,8 +117,6 @@
                 @endif
             </div>
         </div>
-
-
     </div>
     {{-- end middle content --}}
 
@@ -187,43 +174,23 @@
                 </form>
             </div>
 
-            @if (session()->has('member_message'))
-            @if ($phone_member)
-            <x-popup-notification :message="session('member_message')" :timeout="5000" iconPath="M6 18L18 6M6 6l12 12"
-                iconColor="text-gray-900" />
-            @else
-            <div class="flex items-center gap-2 p-2 text-sm border border-red-100 rounded-lg bg-red-50 text-slate-800"
-                role="alert">
-                <svg class="w-4 h-4 text-red-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-                    width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
-                    <path fill-rule="evenodd"
-                        d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm11-4a1 1 0 1 0-2 0v5a1 1 0 1 0 2 0V8Zm-1 7a1 1 0 1 0 0 2h.01a1 1 0 1 0 0-2H12Z"
-                        clip-rule="evenodd" />
-                </svg>
-                <div class="text-red-800">
-                    {{ session('member_message') }}
-                </div>
-            </div>
+            @if (session()->has('member_success'))
+            @if($phone_member)
+            <x-popup-notification :message="session('member_success')" :timeout="5000" iconPath="M6 18L18 6M6 6l12 12"
+                iconColor="text-green-900" textColor="text-green-900" />
             @endif
             @endif
-            @if (session()->has('order_error'))
-            <x-popup-notification :message="session('order_error')" :timeout="5000"
-                iconPath="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm11-4a1 1 0 1 0-2 0v5a1 1 0 1 0 2 0V8Zm-1 7a1 1 0 1 0 0 2h.01a1 1 0 1 0 0-2H12Z"
-                iconColor="text-red-800" />
-            {{-- <div
-                class="flex items-center gap-2 p-2 text-sm border border-red-100 rounded-lg bg-red-50 text-slate-800"
-                role="alert">
-                <svg class="w-4 h-4 text-red-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-                    width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
-                    <path fill-rule="evenodd"
-                        d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm11-4a1 1 0 1 0-2 0v5a1 1 0 1 0 2 0V8Zm-1 7a1 1 0 1 0 0 2h.01a1 1 0 1 0 0-2H12Z"
-                        clip-rule="evenodd" />
-                </svg>
-                <div class="text-red-800">
-                    {{ session('order_error') }}
-                </div>
-            </div> --}}
+
+            @if(session()->has('member_info'))
+            <x-popup-notification :message="session('member_info')" :timeout="5000" iconPath="M6 18L18 6M6 6l12 12"
+                iconColor="text-orange-900" textColor="text-orange-900" />
             @endif
+
+            @if(session()->has('member_error'))
+            <x-popup-notification :message="session('member_error')" :timeout="5000" iconPath="M6 18L18 6M6 6l12 12"
+                iconColor="text-blue-900" textColor="text-blue-900" />
+            @endif
+
         </div>
 
         {{-- detail info --}}
@@ -280,37 +247,14 @@
                 </form>
             </div>
             @if ($discount_code != '')
-            @if (session()->has('promo_message'))
+            @if (session()->has('promo_success'))
             @if ($discount_price > 0)
-            <div class="flex items-center justify-between mt-4">
-                <span class="flex gap-1 text-sm font-medium text-gray-900">
-                    <svg class="w-4 h-4 text-blue-800 dark:text-white" aria-hidden="true"
-                        xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
-                        viewBox="0 0 24 24">
-                        <path fill-rule="evenodd"
-                            d="M20.29 8.567c.133.323.334.613.59.85v.002a3.536 3.536 0 0 1 0 5.166 2.442 2.442 0 0 0-.776 1.868 3.534 3.534 0 0 1-3.651 3.653 2.483 2.483 0 0 0-1.87.776 3.537 3.537 0 0 1-5.164 0 2.44 2.44 0 0 0-1.87-.776 3.533 3.533 0 0 1-3.653-3.654 2.44 2.44 0 0 0-.775-1.868 3.537 3.537 0 0 1 0-5.166 2.44 2.44 0 0 0 .775-1.87 3.55 3.55 0 0 1 1.033-2.62 3.594 3.594 0 0 1 2.62-1.032 2.401 2.401 0 0 0 1.87-.775 3.535 3.535 0 0 1 5.165 0 2.444 2.444 0 0 0 1.869.775 3.532 3.532 0 0 1 3.652 3.652c-.012.35.051.697.184 1.02ZM9.927 7.371a1 1 0 1 0 0 2h.01a1 1 0 0 0 0-2h-.01Zm5.889 2.226a1 1 0 0 0-1.414-1.415L8.184 14.4a1 1 0 0 0 1.414 1.414l6.218-6.217Zm-2.79 5.028a1 1 0 1 0 0 2h.01a1 1 0 1 0 0-2h-.01Z"
-                            clip-rule="evenodd" />
-                    </svg>
-                    Diskon {{ $discount_total }}% {{ session('promo_message ') }}
-                </span>
-                <span class="text-sm font-medium text-blue-700">
-                    Rp{{ number_format($discount_price, 0, ',', '.') }}
-                </span>
-            </div>
-            @else
-            <div class="flex items-center gap-2 p-2 text-sm border border-red-100 rounded-lg bg-red-50 text-slate-800"
-                role="alert">
-                <svg class="w-4 h-4 text-red-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-                    width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
-                    <path fill-rule="evenodd"
-                        d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm11-4a1 1 0 1 0-2 0v5a1 1 0 1 0 2 0V8Zm-1 7a1 1 0 1 0 0 2h.01a1 1 0 1 0 0-2H12Z"
-                        clip-rule="evenodd" />
-                </svg>
-                <div class="text-red-800">
-                    {{ session('promo_message') }}
-                </div>
-            </div>
+            <x-popup-notification :message="session('promo_success')" :timeout="5000" iconPath="M6 18L18 6M6 6l12 12"
+                iconColor="text-green-900" textColor="text-green-900" />
             @endif
+            @else
+            <x-popup-notification :message="session('promo_error')" :timeout="5000" iconPath="M6 18L18 6M6 6l12 12"
+                iconColor="text-green-900" textColor="text-green-900" />
             @endif
             @endif
 
@@ -323,6 +267,12 @@
                 Konfirmasi Pembayaran
             </button>
         </div>
+        @if (session()->has('order_error'))
+        <x-popup-notification :message="session('order_error')" :timeout="2000"
+            iconPath="M7 17v1a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1a3 3 0 0 0-3-3h-4a3 3 0 0 0-3 3Zm8-9a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+            iconColor="text-red-800" textColor="text-red-800" />
+        @endif
+
         @endif
     </div>
     {{-- end right content --}}

@@ -10,7 +10,7 @@
             </span>
 
             <div class="flex-1">
-                <strong class="block font-medium text-gray-900"> {{ $message }} </strong>
+                <strong class="block font-medium {{ $textColor }}"> {{ $message }} </strong>
             </div>
 
             <button @click="show = false; clearTimeout(timeout);" class="text-gray-500 transition hover:text-gray-600">

@@ -121,7 +121,7 @@ class Order extends Component
                 }
             }
             else {
-                session()->flash('product_error', 'Stok Barang Habis!');
+                session()->flash('stock_error', 'Stok Barang Habis!');
                 // dd('stok abis');
             }
 
@@ -147,7 +147,7 @@ class Order extends Component
                     {
                         if(($orderProduct->quantity + 1) > $product->stock)
                         {
-                            session()->flash('product_error', 'Stock Tidak Cukup!');
+                            session()->flash('stock_error', 'Stock Tidak Cukup!');
                         } else {
                             $orderProduct->increment('quantity', 1);
                         }
@@ -244,7 +244,7 @@ class Order extends Component
                     $order->update([
                         'member_id' => $member->id
                     ]);
-                    session()->flash('member_message', 'Member berhasil digunakan');
+                    session()->flash('member_success', 'Member berhasil digunakan');
                 }
             } else {
                 $member = Member::firstOrCreate([
@@ -256,11 +256,11 @@ class Order extends Component
                         'member_id' => $member->id
                     ]);
                 }
-                session()->flash('member_message', 'Member Baru');
+                session()->flash('member_info', 'Member Baru');
             }
 
         } else {
-            session()->flash('member_message', 'Member harus diisi');
+            session()->flash('member_error', 'Member harus diisi');
         }
     }
 
@@ -281,12 +281,12 @@ class Order extends Component
                 $discount_total_decimal = $promo->discount_value / 100; // convert to decimal (0.1)
                 $this->discount_price = $this->order->total_price * $discount_total_decimal; // get total discount (rupiah) - total price * 0.1
 
-                session()->flash('promo_message', 'Digunakan');
+                session()->flash('promo_success', 'Digunakan');
             } else if($promo_type == 'Rupiah')
             {
                 $this->discount_total = 0; // get value discount (10%)
                 $this->discount_price = $promo->discount_value;
-                session()->flash('promo_message', 'Digunakan');
+                session()->flash('promo_success', 'Digunakan');
             }
 
         } else {
@@ -294,7 +294,7 @@ class Order extends Component
             $this->discount_total = 0;
             $this->grand_total = $this->total_price + $this->ppn;
 
-            session()->flash('promo_message', 'Kode Diskon Tidak Valid');
+            session()->flash('promo_error', 'Kode Diskon Tidak Valid');
         }
         return $this->discount_price;
 
