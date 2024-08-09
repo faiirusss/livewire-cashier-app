@@ -1,4 +1,12 @@
 <div class="flex flex-row w-full h-screen pb-2 overflow-hidden">
+
+    @if (session()->has('member_message'))
+    @if ($phone_member)
+
+    @endif
+    @endif
+
+
     <div class="w-8/12 border-e">
         <div class="px-2 py-5 mx-auto border-b max-w-screen sm:px-6 lg:px-8">
             <form class="flex" wire:submit="createOrder">
@@ -181,18 +189,8 @@
 
             @if (session()->has('member_message'))
             @if ($phone_member)
-            <div class="flex items-center gap-2 p-2 text-sm border border-gray-300 rounded-lg text-slate-800 bg-slate-100"
-                role="alert">
-                <svg class="w-4 h-4 text-blue-600 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-                    width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
-                    <path fill-rule="evenodd"
-                        d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm13.707-1.293a1 1 0 0 0-1.414-1.414L11 12.586l-1.793-1.793a1 1 0 0 0-1.414 1.414l2.5 2.5a1 1 0 0 0 1.414 0l4-4Z"
-                        clip-rule="evenodd" />
-                </svg>
-                <div>
-                    {{ session('member_message') }}
-                </div>
-            </div>
+            <x-popup-notification :message="session('member_message')" :timeout="5000" iconPath="M6 18L18 6M6 6l12 12"
+                iconColor="text-gray-900" />
             @else
             <div class="flex items-center gap-2 p-2 text-sm border border-red-100 rounded-lg bg-red-50 text-slate-800"
                 role="alert">
@@ -209,7 +207,11 @@
             @endif
             @endif
             @if (session()->has('order_error'))
-            <div class="flex items-center gap-2 p-2 text-sm border border-red-100 rounded-lg bg-red-50 text-slate-800"
+            <x-popup-notification :message="session('order_error')" :timeout="5000"
+                iconPath="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm11-4a1 1 0 1 0-2 0v5a1 1 0 1 0 2 0V8Zm-1 7a1 1 0 1 0 0 2h.01a1 1 0 1 0 0-2H12Z"
+                iconColor="text-red-800" />
+            {{-- <div
+                class="flex items-center gap-2 p-2 text-sm border border-red-100 rounded-lg bg-red-50 text-slate-800"
                 role="alert">
                 <svg class="w-4 h-4 text-red-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
                     width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
@@ -220,7 +222,7 @@
                 <div class="text-red-800">
                     {{ session('order_error') }}
                 </div>
-            </div>
+            </div> --}}
             @endif
         </div>
 
