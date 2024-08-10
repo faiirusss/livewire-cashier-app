@@ -176,21 +176,21 @@
 
             @if (session()->has('member_success'))
             @if($phone_member)
-            <x-popup-notification :message="session('member_success')" :timeout="5000" iconPath="M6 18L18 6M6 6l12 12"
-                iconColor="text-green-900" textColor="text-green-900" />
+            <x-popup-notification :message="session('member_success')" :timeout="5000"
+                iconPath="M8.5 11.5 11 14l4-4m6 2a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" iconColor="text-green-500" />
             @endif
             @endif
 
             @if(session()->has('member_info'))
-            <x-popup-notification :message="session('member_info')" :timeout="5000" iconPath="M6 18L18 6M6 6l12 12"
-                iconColor="text-orange-900" textColor="text-orange-900" />
+            <x-popup-notification :message="session('member_info')" :timeout="5000"
+                iconPath="M4.5 17H4a1 1 0 0 1-1-1 3 3 0 0 1 3-3h1m0-3.05A2.5 2.5 0 1 1 9 5.5M19.5 17h.5a1 1 0 0 0 1-1 3 3 0 0 0-3-3h-1m0-3.05a2.5 2.5 0 1 0-2-4.45m.5 13.5h-7a1 1 0 0 1-1-1 3 3 0 0 1 3-3h3a3 3 0 0 1 3 3 1 1 0 0 1-1 1Zm-1-9.5a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0Z"
+                iconColor="text-blue-500" />
             @endif
 
             @if(session()->has('member_error'))
-            <x-popup-notification :message="session('member_error')" :timeout="5000" iconPath="M6 18L18 6M6 6l12 12"
-                iconColor="text-blue-900" textColor="text-blue-900" />
+            <x-popup-notification :message="session('member_error')" :timeout="5000"
+                iconPath="m15 9-6 6m0-6 6 6m6-3a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" iconColor="text-red-500" />
             @endif
-
         </div>
 
         {{-- detail info --}}
@@ -246,15 +246,17 @@
                     </div>
                 </form>
             </div>
+
             @if ($discount_code != '')
             @if (session()->has('promo_success'))
             @if ($discount_price > 0)
-            <x-popup-notification :message="session('promo_success')" :timeout="5000" iconPath="M6 18L18 6M6 6l12 12"
-                iconColor="text-green-900" textColor="text-green-900" />
+            <x-popup-notification :message="session('promo_success')" :timeout="5000"
+                iconPath="M8.891 15.107 15.11 8.89m-5.183-.52h.01m3.089 7.254h.01M14.08 3.902a2.849 2.849 0 0 0 2.176.902 2.845 2.845 0 0 1 2.94 2.94 2.849 2.849 0 0 0 .901 2.176 2.847 2.847 0 0 1 0 4.16 2.848 2.848 0 0 0-.901 2.175 2.843 2.843 0 0 1-2.94 2.94 2.848 2.848 0 0 0-2.176.902 2.847 2.847 0 0 1-4.16 0 2.85 2.85 0 0 0-2.176-.902 2.845 2.845 0 0 1-2.94-2.94 2.848 2.848 0 0 0-.901-2.176 2.848 2.848 0 0 1 0-4.16 2.849 2.849 0 0 0 .901-2.176 2.845 2.845 0 0 1 2.941-2.94 2.849 2.849 0 0 0 2.176-.901 2.847 2.847 0 0 1 4.159 0Z"
+                iconColor="text-green-500" />
             @endif
             @else
-            <x-popup-notification :message="session('promo_error')" :timeout="5000" iconPath="M6 18L18 6M6 6l12 12"
-                iconColor="text-green-900" textColor="text-green-900" />
+            <x-popup-notification :message="session('promo_error')" :timeout="5000"
+                iconPath="M12 13V8m0 8h.01M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" iconColor="text-red-500" />
             @endif
             @endif
 

@@ -281,12 +281,12 @@ class Order extends Component
                 $discount_total_decimal = $promo->discount_value / 100; // convert to decimal (0.1)
                 $this->discount_price = $this->order->total_price * $discount_total_decimal; // get total discount (rupiah) - total price * 0.1
 
-                session()->flash('promo_success', 'Digunakan');
+                session()->flash('promo_success', 'Promo berhasil Digunakan');
             } else if($promo_type == 'Rupiah')
             {
                 $this->discount_total = 0; // get value discount (10%)
                 $this->discount_price = $promo->discount_value;
-                session()->flash('promo_success', 'Digunakan');
+                session()->flash('promo_success', 'Promo berhasil Digunakan');
             }
 
         } else {
