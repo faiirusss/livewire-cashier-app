@@ -1,5 +1,8 @@
 <div x-data="{ show: true, timeout: null }" x-init="timeout = setTimeout(() => show = false, {{ $timeout ?? 5000 }})"
-    x-show="show" x-transition class="absolute z-50 right-10 top-10">
+    x-show="show" x-transition:enter="transition transform ease-out duration-700"
+    x-transition:enter-start="translate-x-full opacity-0" x-transition:enter-end="translate-x-0 opacity-100"
+    x-transition:leave="transition transform ease-in duration-700" x-transition:leave-start="translate-x-0 opacity-100"
+    x-transition:leave-end="translate-x-full opacity-0" class="absolute top-0 right-0 z-50 p-4">
     <div role="alert" class="p-3 bg-white border border-gray-200 rounded-xl w-80">
         <div class="flex items-center gap-4">
             <span class="{{ $iconColor }}">
