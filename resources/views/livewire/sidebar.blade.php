@@ -71,6 +71,7 @@
         </div>
 
         <div class="py-4 overflow-y-auto max-h-[510px] overflow-x-hidden">
+            @if($orders)
             @foreach($orders as $order)
             <article class="mb-5 bg-white border-2 border-gray-100 rounded-xl">
                 <div class="flex items-start gap-3 p-4 sm:p-6 lg:p-8">
@@ -112,6 +113,7 @@
                 </div>
             </article>
             @endforeach
+            @endif
         </div>
     </div>
     {{-- end sidebar --}}
