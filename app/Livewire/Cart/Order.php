@@ -31,7 +31,8 @@ class Order extends Component
 
     public function render()
     {
-        $this->order = \App\Models\Order::where('done_at', null)
+        $this->order = \App\Models\Order::where('user_id', auth()->id()) // Tambahkan filter user_id
+                ->where('done_at', null)
                 ->with('orderProducts')
                 ->latest()
                 ->first();
@@ -73,20 +74,24 @@ class Order extends Component
         {
             if($product->stock >= 1)
             {
-                $this->order = \App\Models\Order::where('done_at', null)
-                    ->latest()
-                    ->first();
+                $this->order = \App\Models\Order::where('user_id', auth()->id())
+                ->where('done_at', null)
+                ->latest()
+                ->first();
 
-                if($this->order == null)
-                {
+                if ($this->order == null) {
                     $this->order = \App\Models\Order::create([
                         'invoice_number' => $this->generateUniqueCode(),
+                        'user_id' => auth()->id(),
                     ]);
+                    session(['id_order' => $this->order->id]);
                 }
+
                 // mencari product di order product
                 $orderProduct = OrderProduct::where('order_id', $this->order->id)
                     ->where('sku_product', $this->search)
                     ->first();
+
                 if($orderProduct)
                 {
                     if($isAdded)
@@ -212,10 +217,14 @@ class Order extends Component
         $discount_price = $this->discount_price ?? 0;
         $grand_total = $this->grand_total;
 
-        $order = \App\Models\Order::where('done_at', null)->latest()
-        ->first();
+        $session_order_id = session('id_order');
 
-        if($order->member_id == null){
+        $order = \App\Models\Order::where('user_id', auth()->id())
+                            ->where('done_at', null)
+                            ->where('id', $session_order_id)
+                            ->first();
+
+        if ($order->member_id == null) {
             session()->flash('order_error', 'Member harus diisi!');
             return;
         }
@@ -229,36 +238,26 @@ class Order extends Component
         $this->redirect('/payment');
     }
 
+
     public function member()
     {
-
-        if($this->phone_member != null){
+        if ($this->phone_member != null) {
             $member = Member::where('phone', $this->phone_member)->first();
-            $order = \App\Models\Order::where('done_at', null)
+            $order = \App\Models\Order::where('user_id', auth()->id())
+                    ->where('done_at', null)
                     ->latest()
                     ->first();
-            // member sudah ada
-            if($member)
-            {
-                if ($order) {
-                    $order->update([
-                        'member_id' => $member->id
-                    ]);
+
+            if ($order) {
+                if ($member) {
+                    $order->update(['member_id' => $member->id]);
                     session()->flash('member_success', 'Member berhasil digunakan');
+                } else {
+                    $member = Member::firstOrCreate(['phone' => $this->phone_member]);
+                    $order->update(['member_id' => $member->id]);
+                    session()->flash('member_info', 'Member Baru');
                 }
-            } else {
-                $member = Member::firstOrCreate([
-                    'phone' => $this->phone_member,
-                ]);
-
-                if ($order) {
-                    $order->update([
-                        'member_id' => $member->id
-                    ]);
-                }
-                session()->flash('member_info', 'Member Baru');
             }
-
         } else {
             session()->flash('member_error', 'Member harus diisi');
         }
@@ -297,7 +296,6 @@ class Order extends Component
             session()->flash('promo_error', 'Kode Diskon Tidak Valid');
         }
         return $this->discount_price;
-
     }
 
     function generateUniqueCode($length = 6) {
