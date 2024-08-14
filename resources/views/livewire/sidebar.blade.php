@@ -35,6 +35,13 @@
                 </svg>
             </a>
             @endcan
+            <button id="connect-usb"
+                class="group relative flex w-full justify-center rounded-lg px-2 py-1.5 text-sm text-gray-500 hover:bg-gray-50 hover:text-gray-700">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                    <path stroke="currentColor" stroke-linejoin="round" stroke-width="2"
+                        d="M16.444 18H19a1 1 0 0 0 1-1v-5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v5a1 1 0 0 0 1 1h2.556M17 11V5a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v6h10ZM7 15h10v4a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1v-4Z" />
+                </svg>
+            </button>
             <button wire:click="logout"
                 class="group relative flex w-full justify-center rounded-lg px-2 py-1.5 text-sm text-gray-500 hover:bg-gray-50 hover:text-gray-700">
                 <svg xmlns="http://www.w3.org/2000/svg" class="opacity-75 size-6" fill="none" viewBox="0 0 24 24"
@@ -118,3 +125,30 @@
     </div>
     {{-- end sidebar --}}
 </div>
+
+
+<script>
+    document.getElementById("connect-usb").addEventListener("click", async () => {
+    try {
+    // Minta izin untuk memilih perangkat USB
+    const device = await navigator.usb.requestDevice({ filters: [] });
+
+    if (device) {
+    console.log("Device connected:", device.productName);
+    localStorage.setItem('printerDevice', JSON.stringify({
+        vendorId: device.vendorId,
+        productId: device.productId,
+        productName: device.productName
+    }));
+    } else {
+    console.log("No device connected.");
+    }
+    } catch (error) {
+        document.getElementById("status").textContent =
+        "No device detected or permission denied.";
+        console.error("Error:", error);
+        }
+    });
+
+
+</script>

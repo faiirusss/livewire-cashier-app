@@ -20,6 +20,7 @@ class Payment extends Component
     public $ppn = 0;
 
     public $isModalOpen = false;
+    public $printerDeviceData;
 
     public function render()
     {
@@ -218,6 +219,11 @@ class Payment extends Component
             'done_at' => now(),
             'return_amount' => 0
         ]);
+
+        $printerData = json_decode($this->printerDeviceData);
+
+        // Gunakan variabel 'productName' atau 'vendorId' dan 'productId' sebagai identifier
+        $printerName = $printerData->productName ?? 'default_printer_name';
 
         foreach ($this->order->orderProducts as $itemProduct) {
             $product = Product::find($itemProduct->product_id);
