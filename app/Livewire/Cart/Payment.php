@@ -4,6 +4,7 @@ namespace App\Livewire\Cart;
 
 use App\Models\Order;
 use App\Models\Product;
+use GuzzleHttp\Client;
 use Livewire\Component;
 use Mike42\Escpos\EscposImage;
 use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
@@ -59,7 +60,7 @@ class Payment extends Component
 
         $this->return_amount = $this->paid_amount - $this->order->grand_total;
 
-        if($this->paid_amount > $this->order->grand_total) {
+        if($this->paid_amount >= $this->order->grand_total) {
 
             foreach ($this->order->orderProducts as $itemProduct) {
                 $product = Product::find($itemProduct->product_id);
@@ -86,25 +87,24 @@ class Payment extends Component
     public function pay_cash()
     {
         $this->order = Order::where('done_at', null)
-        ->with('orderProducts')
-        ->latest()
-        ->first();
+            ->with('orderProducts')
+            ->latest()
+            ->first();
 
         $this->order->update([
             'done_at' => now()
         ]);
 
         $orderId = strtoupper($this->order->invoice_number);
-        $cashier = auth()->user()->name; // Assuming the cashier is the authenticated user
+        $cashier = auth()->user()->name;
         $member = $this->order->member->name ?? $this->order->member->phone;
-        $address = 'Jl. Binong Jati No.124'; // Replace with actual address
-        $address2 = 'Kec.Batununggal, Bandung, 40275'; // Replace with actual address
-        $phone = '0856-2401-0106'; // Replace with actual phone number
+        $address = 'Jl. Binong Jati No.124';
+        $address2 = 'Kec.Batununggal, Bandung, 40275';
+        $phone = '0856-2401-0106';
         $date = $this->order->created_at->format('Y-m-d H:i');
         $pembayaran = $this->order->payment_method;
         $bayar = $this->order->paid_amount;
         $kembali = $this->order->return_amount;
-
 
         function centerTextCash($text, $width = 32) {
             if (strlen($text) >= $width) {
@@ -112,7 +112,7 @@ class Payment extends Component
             }
             $padding = floor(($width - strlen($text)) / 2);
             return str_repeat(' ', $padding) . $text;
-            }
+        }
 
         // Format the receipt text
         $text = centerTextCash('Merajut Asa Kita') . "\n";
@@ -148,8 +148,6 @@ class Payment extends Component
         }
         $textTotalBarang = str_pad("Total Barang", $nameWidth);
         $totalBarang = str_pad($this->total_qty, $qtyWidth, ' ', STR_PAD_LEFT);
-
-        // $text .= "$textTotalBarang$totalBarang\n";
 
         $text .= "--------------------------------\n";
 
@@ -189,68 +187,60 @@ class Payment extends Component
         $text .= "--------------------------------\n";
         $text .= centerTextCash('Terima Kasih') . "\n";
 
-        try {
-            $connector = new WindowsPrintConnector("RP58");
-            $printer = new Printer($connector);
+        $client = new Client();
+        $response = $client->post('https://api.printnode.com/printjobs', [
+            'auth' => ['lO8U8x_2Z9w7uMWwA-MlM47khgWOHk5lAtfRLVLfeaw', ''],
+            'json' => [
+                'printerId' => '73602875', // Ganti dengan ID printer yang sesuai
+                'title' => 'Receipt Print',
+                'contentType' => 'raw_base64',
+                'content' => base64_encode($text), // Menggunakan konten struk yang telah diformat
+                'source' => 'Laravel Application'
+            ]
+        ]);
 
-            $printer->text($text);
-            $printer->cut();
-            $printer->close();
-        } catch (\Exception $e) {
-            error_log($e->getMessage());
+        if ($response->getStatusCode() == 201) {
+            session()->flash('message', 'Struk berhasil dicetak.');
+        } else {
+            session()->flash('error', 'Terjadi kesalahan saat mencetak struk.');
         }
 
         return redirect()->route('order');
     }
 
+
     public function pay_qris()
     {
+        $printerId = '73602875';
 
         $this->order = Order::where('done_at', null)
         ->with('orderProducts')
         ->latest()
         ->first();
 
-        $paid_amount = $this->order->grand_total;
-
         $this->order->update([
-            'paid_amount' => $paid_amount,
-            'payment_method' => 'Qris',
-            'done_at' => now(),
-            'return_amount' => 0
+            'done_at' => now()
         ]);
 
-        $printerData = json_decode($this->printerDeviceData);
-
-        // Gunakan variabel 'productName' atau 'vendorId' dan 'productId' sebagai identifier
-        $printerName = $printerData->productName ?? 'default_printer_name';
-
-        foreach ($this->order->orderProducts as $itemProduct) {
-            $product = Product::find($itemProduct->product_id);
-            if ($product) {
-                $product->decrement('stock', $itemProduct->quantity);
-            }
-        }
 
         $orderId = strtoupper($this->order->invoice_number);
-        $cashier = auth()->user()->name; // Assuming the cashier is the authenticated user
+        $cashier = auth()->user()->name;
         $member = $this->order->member->name ?? $this->order->member->phone;
-        $address = 'Jl. Binong Jati No.124'; // Replace with actual address
-        $address2 = 'Kec.Batununggal, Bandung, 40275'; // Replace with actual address
-        $phone = '0856-2401-0106'; // Replace with actual phone number
+        $address = 'Jl. Binong Jati No.124';
+        $address2 = 'Kec.Batununggal, Bandung, 40275';
+        $phone = '0856-2401-0106';
         $date = $this->order->created_at->format('Y-m-d H:i');
         $pembayaran = 'Qris';
         $bayar = $this->order->paid_amount;
         $kembali = 0;
 
-
         function centerText($text, $width = 32) {
             if (strlen($text) >= $width) {
-                return $text; // If the text is longer than or equal to the width, return it as is.
+                return $text;
             }
             $padding = floor(($width - strlen($text)) / 2);
             return str_repeat(' ', $padding) . $text;
-            }
+        }
 
         // Format the receipt text
         $text = centerText('Merajut Asa Kita') . "\n";
@@ -284,10 +274,6 @@ class Payment extends Component
 
             $text .= "$paddedName$paddedQty$paddedPrice\n";
         }
-        // $textTotalBarang = str_pad("Total Barang", $nameWidth);
-        // $totalBarang = str_pad($this->total_qty, $qtyWidth, ' ', STR_PAD_LEFT);
-
-        // $text .= "$textTotalBarang$totalBarang\n";
         $text .= "--------------------------------\n";
 
         $space = str_pad("", 3, ' ', STR_PAD_LEFT);
@@ -327,25 +313,25 @@ class Payment extends Component
         $text .= "--------------------------------\n";
         $text .= centerText('Terima Kasih') . "\n";
 
-        $printerNames = ["RPP02N", "RP58"];
-        $connected = false;
+        // Mengirim konten struk ke PrintNode
+        $client = new Client();
+        $response = $client->post('https://api.printnode.com/printjobs', [
+            'auth' => ['lO8U8x_2Z9w7uMWwA-MlM47khgWOHk5lAtfRLVLfeaw', ''],
+            'json' => [
+                'printerId' => $printerId,
+                'title' => 'Receipt Print',
+                'contentType' => 'raw_base64',
+                'content' => base64_encode($text),
+                'source' => 'Laravel Application'
+            ]
+        ]);
 
-        foreach ($printerNames as $printerName) {
-            try {
-                $connector = new WindowsPrintConnector($printerName);
-                $printer = new Printer($connector);
-
-                $printer->text($text);
-                $printer->cut();
-                $printer->close();
-
-                $connected = true;
-                break;
-            } catch (\Exception $e) {
-                error_log($e->getMessage());
-            }
+        if ($response->getStatusCode() == 201) {
+            session()->flash('message', 'Struk berhasil dicetak.');
+        } else {
+            session()->flash('error', 'Terjadi kesalahan saat mencetak struk.');
         }
+
         return redirect()->route('order');
     }
-
 }
