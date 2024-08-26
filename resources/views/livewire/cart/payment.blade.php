@@ -310,33 +310,3 @@
         </div>
     </div>
 </div>
-
-
-{{-- <script>
-    document.getElementById('cetak-struk').addEventListener('click', function () {
-        var element = document.getElementById('struk-content');
-
-        // Menghitung tinggi konten secara dinamis
-        var contentHeight = element.scrollHeight;
-
-        // Konversi tinggi dari pixel ke milimeter (1mm ≈ 3.779528px)
-        var contentHeightInMm = contentHeight / 3.779528;
-
-        // Pastikan tinggi minimal adalah 20mm untuk mencegah error pada jsPDF
-        contentHeightInMm = Math.max(contentHeightInMm, 20);
-
-        html2pdf(element, {
-        margin: [2, 0],
-        filename: 'struk-pembelian.pdf',
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2 },
-        jsPDF: {
-        unit: 'mm',
-        format: [58, contentHeightInMm], // Menyesuaikan tinggi dengan konten
-        orientation: 'portrait'
-        }
-        });
-    });
-
-
-</script> --}}

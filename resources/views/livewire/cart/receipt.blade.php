@@ -139,7 +139,10 @@
                 <tr>
                     <td class="label">Member</td>
                     <td class="dot">:</td>
-                    <td class="value">{{ ucwords($order->member->name) }}</td>
+                    @php
+                    $member = $order->member->name ?? $order->member->phone
+                    @endphp
+                    <td class="value">{{ ucwords($member) }}</td>
                 </tr>
             </table>
         </div>
