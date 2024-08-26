@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\PrintController;
+use App\Livewire\Cart\Payment;
+use App\Models\Order;
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 
@@ -23,7 +25,10 @@ Route::middleware('guest')->group(function () {
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/order', App\Livewire\Cart\Order::class)->name('order');
     Route::get('/payment', App\Livewire\Cart\Payment::class)->name('payment');
-    Route::get('/print', [PrintController::class, 'print'])->name('print');
+
+
+   Route::get('/receipt-pdf', [App\Http\Controllers\ReceiptPrint::class, 'index'])->name('receipt');
+
 });
 
 Route::view('dashboard', 'dashboard')

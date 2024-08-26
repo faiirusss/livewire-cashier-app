@@ -224,7 +224,7 @@
         class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
         <div class="relative w-full max-w-md max-h-full p-4">
             <!-- Modal content -->
-            <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
+            <div class="relative bg-white rounded-lg shadow dark:bg-gray-700" id="struk-content">
                 <!-- Modal header -->
                 <div class="flex items-center justify-between p-4 border-b rounded-t md:p-5 dark:border-gray-600">
                     <div>
@@ -297,13 +297,44 @@
                         </svg>
                     </div>
 
-                    <button wire:click="pay_qris"
-                        class="text-white inline-flex w-full justify-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                        Cetak Struk
-                    </button>
+                    <form action="{{ route('receipt') }}" method="GET" target="_blank">
+                        <button type="submit" wire:click="pay_qris"
+                            class="text-white inline-flex w-full justify-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                            Cetak Struk
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
-
 </div>
+
+
+{{-- <script>
+    document.getElementById('cetak-struk').addEventListener('click', function () {
+        var element = document.getElementById('struk-content');
+
+        // Menghitung tinggi konten secara dinamis
+        var contentHeight = element.scrollHeight;
+
+        // Konversi tinggi dari pixel ke milimeter (1mm ≈ 3.779528px)
+        var contentHeightInMm = contentHeight / 3.779528;
+
+        // Pastikan tinggi minimal adalah 20mm untuk mencegah error pada jsPDF
+        contentHeightInMm = Math.max(contentHeightInMm, 20);
+
+        html2pdf(element, {
+        margin: [2, 0],
+        filename: 'struk-pembelian.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: {
+        unit: 'mm',
+        format: [58, contentHeightInMm], // Menyesuaikan tinggi dengan konten
+        orientation: 'portrait'
+        }
+        });
+    });
+
+
+</script> --}}

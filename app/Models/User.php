@@ -71,4 +71,9 @@ class User extends Authenticatable implements FilamentUser
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    public function order()
+    {
+        return $this->hasMany(Order::class);
+    }
 }
