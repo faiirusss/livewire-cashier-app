@@ -158,10 +158,10 @@
                 $totalPrice += $item->unit_price * $quantity;
                 $totalQty += $quantity;
                 $grandTotal = $order->grand_total;
-                $diskon = $item->diskon_price;
+                $diskon = $order->discount_price;
                 $ppn = ceil($totalPrice * 0.11);
                 $pembayaran = $order->payment_method ?? 'Qris';
-                $bayar = $order->paid_amount ?? 0;
+                $bayar = $order->paid_amount ?? $order->grand_total;
                 $kembali = $order->return_amount ?? 0;
                 @endphp
                 <tr>

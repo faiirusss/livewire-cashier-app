@@ -21,6 +21,7 @@ class Order extends Component
 
     public $discount_code = '';
     public $discount_total;
+    public $discount_type;
     public $discount_price;
 
     // member
@@ -213,8 +214,6 @@ class Order extends Component
 
     public function confirmOrder()
     {
-        $discount_total = $this->discount_total ?? 0;
-        $discount_price = $this->discount_price ?? 0;
         $grand_total = $this->grand_total;
 
         $session_order_id = session('id_order');
@@ -230,8 +229,6 @@ class Order extends Component
         }
 
         $order->update([
-            'discount_type' => $discount_total,
-            'discount_price' => $discount_price,
             'grand_total' => $grand_total,
         ]);
 
@@ -269,6 +266,10 @@ class Order extends Component
         $discount_code = $this->discount_code;
 
         $promo = \App\Models\Promo::where('promo_code', $discount_code)->first();
+        $order = \App\Models\Order::where('user_id', auth()->id())
+                            ->where('done_at', null)
+                            ->latest()
+                            ->first();
 
         if($promo && ($promo->expired_at >= Carbon::now()))
         {
@@ -276,14 +277,22 @@ class Order extends Component
 
             if($promo_type == 'Persen')
             {
-                $this->discount_total = $promo->discount_value; // get value discount (10%)
                 $discount_total_decimal = $promo->discount_value / 100; // convert to decimal (0.1)
-                $this->discount_price = $this->order->total_price * $discount_total_decimal; // get total discount (rupiah) - total price * 0.1
+                $discount_price = $this->order->total_price * $discount_total_decimal;
+                $this->discount_price = $this->order->total_price * $discount_total_decimal;
 
+                $order->update([
+                   'discount_type' => $promo->discount_type,
+                   'discount_price' => $discount_price
+                ]);
                 session()->flash('promo_success', 'Promo berhasil Digunakan');
+
             } else if($promo_type == 'Rupiah')
             {
-                $this->discount_total = 0; // get value discount (10%)
+                $order->update([
+                    'discount_type' => $promo->discount_type,
+                    'discount_price' => $promo->discount_value
+                ]);
                 $this->discount_price = $promo->discount_value;
                 session()->flash('promo_success', 'Promo berhasil Digunakan');
             }
